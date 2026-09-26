@@ -1,4 +1,5 @@
-import { Component, computed, signal } from '@angular/core';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import { AdminPresenceService } from './admin-presence.service';
 
 type Highlight = {
   label: string;
@@ -35,8 +36,9 @@ type ProfileVariant = {
   styleUrl: './app.scss',
   templateUrl: './app.html',
 })
-export class App {
+export class App implements OnInit {
   protected readonly title = signal('Abel López');
+  protected readonly adminPresence = inject(AdminPresenceService);
 
   protected readonly variants: ProfileVariant[] = [
     {
@@ -175,9 +177,17 @@ export class App {
   protected readonly resumeLabel = computed(() => this.currentVariant().resumeLabel);
   protected readonly resumeUrl = computed(() => this.currentVariant().resumeUrl);
 
+  ngOnInit(): void {
+    void this.adminPresence.initialize();
+  }
+
   protected selectVariant(variantId: string): void {
     const variant = this.variants.find(item => item.id === variantId) ?? this.variants[0];
     this.selectedVariantId.set(variant.id);
     this.currentVariant.set(variant);
+  }
+
+  protected logoutAdmin(): void {
+    void this.adminPresence.logout();
   }
 }
