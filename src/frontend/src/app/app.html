@@ -1,3 +1,16 @@
+@if (adminPresence.isAdmin()) {
+  <header class="admin-toolbar" aria-label="Admin session" aria-live="polite">
+    <span class="admin-status" [class.connected]="adminPresence.state() === 'connected'">
+      {{ adminPresence.state() === 'connected' ? 'Admin session online' : 'Admin session reconnecting' }}
+    </span>
+    <button type="button" class="admin-action" (click)="logoutAdmin()">Sign out</button>
+  </header>
+} @else if (adminPresence.loginEnabled()) {
+  <header class="admin-toolbar" aria-label="Admin access">
+    <a class="admin-action" [href]="adminPresence.loginUrl">Sign in with Telegram</a>
+  </header>
+}
+
 <main class="page-shell">
   <section class="hero">
     <div class="hero-copy">

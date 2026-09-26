@@ -1,6 +1,17 @@
 @PersonalPortfolio.Api_HostAddress = http://localhost:5016
 
-GET {{PersonalPortfolio.Api_HostAddress}}/weatherforecast/
+### Read portfolio sample
+GET {{PersonalPortfolio.Api_HostAddress}}/api/portfolio
 Accept: application/json
+
+### Check admin login configuration and current session
+GET {{PersonalPortfolio.Api_HostAddress}}/api/admin/session
+Accept: application/json
+
+### Start Telegram Login (requires BotFather configuration)
+GET {{PersonalPortfolio.Api_HostAddress}}/api/admin/login
+
+### Logout (requires the admin cookie)
+POST {{PersonalPortfolio.Api_HostAddress}}/api/admin/logout
 
 ###

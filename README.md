@@ -21,6 +21,7 @@ src/
 - Angular built-in template control flow (`@for`) for rendering profile content and collections.
 - SCSS for component and global styling.
 - Angular Router is configured; the current portfolio is rendered by the root component.
+- Angular `HttpClient` and the SignalR JavaScript client support the admin session and live presence connection.
 - Vitest is included in the Angular test toolchain.
 
 ### Backend
@@ -29,8 +30,10 @@ src/
 - Minimal API endpoint (`GET /api/portfolio`) for the initial portfolio sample data.
 - Controller support enabled for future controller-based endpoints.
 - Swashbuckle provides Swagger/OpenAPI documentation in development.
-- CORS policy currently allows the Angular development origin `http://localhost:4200`.
-- HTTPS redirection and the authorization middleware are part of the request pipeline; authentication and authorization policies have not been configured yet.
+- Telegram OIDC Authorization Code with PKCE is configured as the admin identity provider; the handler is only enabled when the BotFather Client ID/Secret and configured owner Telegram user ID are present.
+- ASP.NET Core cookie authentication restricts admin endpoints, and an authorized SignalR hub tracks owner presence across browser devices.
+- CORS origins are configuration-driven and allow credentials for the Angular client.
+- HTTPS redirection is enabled. Production admin cookies require HTTPS.
 
 ## Implementation Approach
 
@@ -38,6 +41,8 @@ src/
 - Angular signals hold the selected profile; computed signals expose the corresponding summary, focus areas, highlights, experience, projects, and resume link to the template.
 - The Angular profile data is currently local to the root component. The frontend does not yet fetch data from the API.
 - The API endpoint currently returns sample data; persistent content storage has not been added.
+- The admin login and SignalR presence are implemented but remain disabled until Telegram Login and owner configuration are supplied through server-side settings.
+- The public suggestion form, Telegram message delivery service, and ntfy offline preview are still planned; no notification service is active yet.
 - Frontend and backend are separate applications and are built independently.
 - Work is organized around GitHub issues. Every issue has a matching working branch, listed below and in [ISSUES.md](ISSUES.md).
 
@@ -113,11 +118,22 @@ npm test
 
 ## Planned, Not Yet Implemented
 
-- Connect Angular to the API and move profile content behind the API.
+- Connect the portfolio profile data to the API.
 - Add real profile photo and separate downloadable resumes for each professional identity.
-- Add contact/suggestions handling and secure Telegram Bot API or webhook delivery.
-- Add persistence, authentication, administration, analytics, blog content, and deployment automation.
+- Add the public suggestions form and secure Telegram Bot API delivery; use ntfy only for a sanitized preview when the owner is absent.
+- Add persistence for submissions, analytics, blog content, and deployment automation.
 - Expand the Software Engineer profile for VB.NET APIs, Python, IBM i/RPG/ILE, SQL Server, PHP, and other stacks. These are profile targets, not additional runtimes currently implemented by this application.
+
+## Admin Notification Configuration
+
+Telegram Login is configured in BotFather with the deployed site's allowed origin and callback URL (`/signin-telegram`). Supply values only on the API host, using User Secrets locally or deployment environment variables:
+
+- `TelegramLogin__ClientId`
+- `TelegramLogin__ClientSecret`
+- `TelegramLogin__OwnerUserId` (the numeric Telegram user ID from the OIDC `id` claim)
+- `Frontend__AllowedOrigins` (allowed Angular origin(s))
+
+The BotFather Client Secret and Telegram Bot API token must never be placed in Angular configuration or committed to the repository. ntfy is intended as a push notification in its mobile app, not an SMS. Its public topic is readable by anyone who knows its name, so use a high-entropy topic and send only a redacted preview, never the full suggestion.
 
 ## Documentation and Backlog
 
