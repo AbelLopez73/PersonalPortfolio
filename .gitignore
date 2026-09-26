@@ -2,6 +2,7 @@ bin/
 obj/
 .vs/
 .vscode/
+/package-lock.json
 *.user
 *.suo
 *.swp
