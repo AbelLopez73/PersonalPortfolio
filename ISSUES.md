@@ -143,5 +143,33 @@
 - SEO behavior for prerendered routes.
 - Error handling when Telegram is unavailable.
 
-## Next step
-Once the repository is connected to GitHub, each item can be converted into a real GitHub issue.
+## GitHub issues and branch mapping
+
+| Issue | GitHub issue | Working branch |
+|---|---|---|
+| 1. Foundation setup | [#1](https://github.com/AbelLopez73/PersonalPortfolio/issues/1) | `feature/issue-1-foundation-setup` |
+| 2. Public site landing page | [#2](https://github.com/AbelLopez73/PersonalPortfolio/issues/2) | `feature/issue-2-public-site-landing-page` |
+| 3. About / Resume page | [#3](https://github.com/AbelLopez73/PersonalPortfolio/issues/3) | `feature/issue-3-about-resume-page` |
+| 4. Portfolio showcase | [#4](https://github.com/AbelLopez73/PersonalPortfolio/issues/4) | `feature/issue-4-portfolio-showcase` |
+| 5. Blog section | [#5](https://github.com/AbelLopez73/PersonalPortfolio/issues/5) | `feature/issue-5-blog-section` |
+| 6. Collaborations section | [#6](https://github.com/AbelLopez73/PersonalPortfolio/issues/6) | `feature/issue-6-collaborations-section` |
+| 7. Suggestions feature | [#7](https://github.com/AbelLopez73/PersonalPortfolio/issues/7) | `feature/issue-7-suggestions-feature` |
+| 8. Telegram webhook integration | [#8](https://github.com/AbelLopez73/PersonalPortfolio/issues/8) | `feature/issue-8-telegram-webhook-integration` |
+| 9. Analytics integration | [#9](https://github.com/AbelLopez73/PersonalPortfolio/issues/9) | `feature/issue-9-analytics-integration` |
+| 10. Admin panel | [#10](https://github.com/AbelLopez73/PersonalPortfolio/issues/10) | `feature/issue-10-admin-panel` |
+| 11. Accessibility and SEO | [#11](https://github.com/AbelLopez73/PersonalPortfolio/issues/11) | `feature/issue-11-accessibility-seo` |
+| 12. Testing and deployment | [#12](https://github.com/AbelLopez73/PersonalPortfolio/issues/12) | `feature/issue-12-testing-deployment` |
+| 13. Multiple profile variants | [#13](https://github.com/AbelLopez73/PersonalPortfolio/issues/13) | `feature/issue-13-profile-variants` |
+| 14. Profile photo and resume assets | [#14](https://github.com/AbelLopez73/PersonalPortfolio/issues/14) | `feature/issue-14-profile-photo-resume-assets` |
+
+## Branch and promotion workflow
+
+- `main` is the final production branch.
+- `desarrollo` is the default branch and integration target for issue branches.
+- `pruebas` receives changes promoted from `desarrollo` for validation.
+- `produccion` receives validated changes promoted from `pruebas`.
+- `main` receives approved releases promoted from `produccion`.
+- Each issue is developed on its matching `feature/issue-...` branch and merged to `desarrollo` through a pull request that references the issue.
+- Promote changes with pull requests in this order: `desarrollo` -> `pruebas` -> `produccion` -> `main`.
+
+The branches and issues above have been created in GitHub. Branch protection and required pull-request checks are not configured yet.
