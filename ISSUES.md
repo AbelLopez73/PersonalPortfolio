@@ -145,7 +145,7 @@
 
 ## GitHub issues and branch mapping
 
-| Issue | GitHub issue | Working branch |
+| Issue or branch role | GitHub issue | Branch |
 |---|---|---|
 | 1. Foundation setup | [#1](https://github.com/AbelLopez73/PersonalPortfolio/issues/1) | `feature/issue-1-foundation-setup` |
 | 2. Public site landing page | [#2](https://github.com/AbelLopez73/PersonalPortfolio/issues/2) | `feature/issue-2-public-site-landing-page` |
@@ -161,6 +161,10 @@
 | 12. Testing and deployment | [#12](https://github.com/AbelLopez73/PersonalPortfolio/issues/12) | `feature/issue-12-testing-deployment` |
 | 13. Multiple profile variants | [#13](https://github.com/AbelLopez73/PersonalPortfolio/issues/13) | `feature/issue-13-profile-variants` |
 | 14. Profile photo and resume assets | [#14](https://github.com/AbelLopez73/PersonalPortfolio/issues/14) | `feature/issue-14-profile-photo-resume-assets` |
+| Workflow: integration | N/A | `desarrollo` |
+| Workflow: validation | N/A | `pruebas` |
+| Workflow: release candidate | N/A | `produccion` |
+| Workflow: released versions | N/A | `main` |
 
 ## Branch and promotion workflow
 
@@ -173,3 +177,5 @@
 - Promote changes with pull requests in this order: `desarrollo` -> `pruebas` -> `produccion` -> `main`.
 
 The branches and issues above have been created in GitHub. Branch protection and required pull-request checks are not configured yet.
+
+Whenever a GitHub issue or any branch is created, renamed, or removed, update this table and the matching table in `README.md` in the same pull request. Do not merge that pull request until both tables match.
