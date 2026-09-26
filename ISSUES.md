@@ -72,20 +72,27 @@
 - Priority: High
 - Phase: Suggestions
 - Status: Backlog
-- Description: Accept public suggestions from visitors through a Telegram-based workflow.
+- Description: Accept public suggestions through a validated form and route them according to the authenticated owner's active presence.
 - Acceptance criteria:
-  - The form sends a message to the configured Telegram group.
-  - Errors are handled gracefully.
+  - Angular uses typed reactive form validation and clear submitting, success, and error states.
+  - ASP.NET Core validates input and applies rate limiting and spam protection.
+  - Accepted suggestions are delivered over the private SignalR hub while the owner is connected.
+  - The complete suggestion is stored in the owner's private Telegram chat; delivery is silent while connected and notifies normally while absent.
+  - When absent, ntfy sends a mobile push preview capped at 30 characters with obvious email and phone patterns redacted.
+  - The full message is never sent to ntfy, provider errors are isolated, and duplicate submissions are prevented or safely reported.
 
 ### 8. Telegram integration
 - Type: Feature
 - Priority: High
 - Phase: Telegram
 - Status: Blocked
-- Description: Configure the Telegram bot API and delivery flow from Angular and ASP.NET Core.
+- Description: Configure backend-mediated outbound delivery with the Telegram Bot API and ntfy for short offline mobile alerts.
 - Acceptance criteria:
-  - Bot token and chat ID are managed securely.
-  - Messages are delivered reliably.
+  - Telegram Bot API token and owner private chat ID are supplied through secure server-side configuration.
+  - Full suggestions are sent to the owner's private Telegram chat; messages are silent when the owner is online and notify normally when absent.
+  - When the owner is absent, ntfy receives only the sanitized short preview; its topic is random and kept out of the frontend.
+  - Telegram delivery has bounded timeouts and failures are handled without exposing secrets or message contents in logs.
+  - Provider clients are testable with fakes; no inbound Telegram webhook or polling loop is used for this outbound flow.
 
 ### 9. Analytics integration
 - Type: Feature
@@ -103,11 +110,15 @@
 - Priority: High
 - Phase: Admin Panel
 - Status: Blocked
-- Description: Create a protected administration panel for content updates and moderation.
+- Description: Add owner authentication to the existing site using Telegram Login and provide a private real-time admin presence session.
 - Acceptance criteria:
-  - Login flow is defined.
-  - Authentication provider is selected.
-  - Access is restricted.
+  - Telegram OIDC Authorization Code flow with PKCE is validated server-side.
+  - Only the configured numeric Telegram owner ID can establish an admin session.
+  - The backend issues a secure HttpOnly cookie; BotFather client secret and bot token never reach Angular.
+  - A private SignalR hub tracks multiple owner-device connections and expires presence after disconnect/timeout.
+  - Anonymous visitors cannot view admin presence or connect to the admin hub.
+  - The existing site provides sign-in/sign-out and a live connection status without requiring a separate dashboard.
+  - Setup and deployment prerequisites are documented; login stays disabled when credentials are not configured.
 
 ### 11. Accessibility and SEO
 - Type: Feature
