@@ -1,19 +1,32 @@
 <main class="page-shell">
   <section class="hero">
     <div class="hero-copy">
-      <p class="eyebrow">Software engineer • Full stack • Product mindset</p>
-      <h1>Hi, I’m {{ title() }}.</h1>
+      <p class="eyebrow">Portfolio variants</p>
+      <h1>Hi, Iâ€™m {{ title() }}.</h1>
       <p class="lead">
-        I design and build resilient digital products that combine clean user experiences with strong backend foundations.
+        {{ variantSummary() }}
       </p>
+
+      <div class="variant-switcher" aria-label="Profile selection">
+        @for (variant of variants; track variant.id) {
+          <button
+            type="button"
+            class="variant-button"
+            [class.active]="selectedVariantId() === variant.id"
+            (click)="selectVariant(variant.id)"
+          >
+            {{ variant.label }}
+          </button>
+        }
+      </div>
 
       <div class="actions">
         <a class="primary" href="#projects">View projects</a>
-        <a class="secondary" href="#contact">Let’s connect</a>
+        <a class="secondary" href="#contact">Letâ€™s connect</a>
       </div>
 
       <div class="stats" aria-label="Professional summary">
-        @for (item of highlights; track item.label) {
+        @for (item of highlights(); track item.label) {
           <div class="stat">
             <strong>{{ item.value }}</strong>
             <span>{{ item.label }}</span>
@@ -24,9 +37,9 @@
 
     <aside class="profile-card" aria-label="Summary card">
       <div class="badge">Available for opportunities</div>
-      <h2>Focus areas</h2>
+      <h2>{{ variantTitle() }} focus</h2>
       <ul>
-        @for (item of focusAreas; track item) {
+        @for (item of focusAreas(); track item) {
           <li>{{ item }}</li>
         }
       </ul>
@@ -36,11 +49,11 @@
   <section class="section" id="experience">
     <div class="section-heading">
       <p class="eyebrow">Experience</p>
-      <h2>Building thoughtful software</h2>
+      <h2>Building thoughtful work</h2>
     </div>
 
     <div class="timeline">
-      @for (item of experience; track item.title) {
+      @for (item of experience(); track item.title) {
         <article class="timeline-item">
           <div class="dot"></div>
           <div class="content-box">
@@ -60,7 +73,7 @@
     </div>
 
     <div class="projects-grid">
-      @for (item of projects; track item.name) {
+      @for (item of projects(); track item.name) {
         <article class="project-card">
           <h3>{{ item.name }}</h3>
           <div class="tags">
@@ -77,11 +90,14 @@
   <section class="section contact" id="contact">
     <div class="section-heading">
       <p class="eyebrow">Contact</p>
-      <h2>Let’s build something meaningful</h2>
+      <h2>Letâ€™s build something meaningful</h2>
     </div>
 
     <p class="contact-copy">
-      I’m open to product engineering, collaboration, and product strategy opportunities.
+      Iâ€™m open to product engineering, operations, logistics and technical collaboration opportunities.
     </p>
+    <div class="resume-row">
+      <a class="primary" [href]="resumeUrl()" target="_blank" rel="noopener noreferrer">Download {{ resumeLabel() }}</a>
+    </div>
   </section>
 </main>
