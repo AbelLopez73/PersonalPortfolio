@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using PersonalPortfolio.Api.Assistant;
 using PersonalPortfolio.Api.Admin;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -29,6 +30,12 @@ builder.Services.AddCors(options =>
 });
 
 builder.Services.AddSignalR();
+builder.Services.AddHttpClient<OllamaAssistantService>((services, client) =>
+{
+    var configuration = services.GetRequiredService<IConfiguration>();
+    client.BaseAddress = new Uri(configuration["Ollama:BaseUrl"] ?? "http://localhost:11434");
+    client.Timeout = TimeSpan.FromMinutes(3);
+});
 builder.Services.AddSingleton<AdminPresenceTracker>();
 builder.Services.AddAuthorization(options =>
 {
@@ -164,6 +171,7 @@ app.MapGet("/api/portfolio", () => new
 });
 
 app.MapControllers();
+app.MapOllamaAssistantEndpoints();
 app.MapAdminEndpoints();
 app.MapHub<AdminPresenceHub>("/hubs/admin")
     .RequireAuthorization(AdminAuthentication.AdminPolicy);

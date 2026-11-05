@@ -1,7 +1,9 @@
 import { TestBed } from '@angular/core/testing';
 import { signal } from '@angular/core';
+import { of } from 'rxjs';
 import { App } from './app';
 import { AdminPresenceService } from './admin-presence.service';
+import { OllamaAssistantService } from './ollama-assistant.service';
 
 describe('App', () => {
   const adminPresence = {
@@ -12,6 +14,9 @@ describe('App', () => {
     initialize: async () => undefined,
     logout: async () => undefined,
   };
+  const assistant = {
+    chat: () => of({ reply: 'Hello from Ollama.' }),
+  };
 
   beforeEach(async () => {
     adminPresence.state.set('unavailable');
@@ -19,7 +24,10 @@ describe('App', () => {
     adminPresence.loginEnabled.set(false);
     await TestBed.configureTestingModule({
       imports: [App],
-      providers: [{ provide: AdminPresenceService, useValue: adminPresence }],
+      providers: [
+        { provide: AdminPresenceService, useValue: adminPresence },
+        { provide: OllamaAssistantService, useValue: assistant },
+      ],
     })
       .compileComponents();
   });
