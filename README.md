@@ -53,10 +53,19 @@ src/
 
 ## Deployment Direction
 
-- Docker Compose is used locally to validate the same frontend and API container boundaries that will be deployed.
-- IONOS is the selected final hosting provider. The application will be deployed as containers so the ASP.NET Core API can keep Telegram integration and other server-side behavior private.
-- Hosting is not configured during feature development or validation. The IONOS setup is addressed only in the pull request from `pruebas` to `produccion`, under issue [#12](https://github.com/AbelLopez73/PersonalPortfolio/issues/12).
-- That release-candidate pull request must document the IONOS service selection, domain, HTTPS configuration, container deployment procedure, environment variables, and Telegram callback URL. Secrets are configured on IONOS and never committed to this repository.
+- Docker Compose is used locally to validate the same frontend and API container boundaries that are deployed.
+- Hosting is not configured during feature development or validation. Environments are deployed only from `pruebas` and `produccion`.
+- Secrets are configured in the hosting provider and in GitHub Actions secrets, and are never committed to this repository.
+
+### Hosting provider decision
+
+| Provider | Link | Status |
+|---|---|---|
+| Microsoft Azure | [azure.microsoft.com](https://azure.microsoft.com/) | **Selected.** Used for the current deployment because the project owner already holds the Azure certification. |
+| IONOS | [ionos.com](https://www.ionos.com/) | Evaluated alternative; available for future developments. |
+| AWS | [aws.amazon.com](https://aws.amazon.com/) | Evaluated alternative; available for future developments. |
+
+The application is packaged as containers, so moving a future project to IONOS or AWS only changes the deployment workflow, not the application.
 
 ## Azure Environments
 
@@ -102,8 +111,8 @@ Whenever a GitHub issue or any branch is created, renamed, or removed, update th
 
 1. Implement each issue on its matching `feature/issue-...` branch.
 2. Open a pull request from the issue branch to `desarrollo`, link the issue, and merge after review and a successful build.
-3. When the integrated changes work and have been tested in `desarrollo`, open a pull request from `desarrollo` to `pruebas`.
-4. After validation succeeds in `pruebas`, open a pull request from `pruebas` to `produccion`. This is the point to define and document the IONOS deployment configuration required by issue #12.
+3. When the integrated changes work and have been tested in `desarrollo`, the **Promote** workflow ([promote.yml](.github/workflows/promote.yml)) automatically opens a pull request from `desarrollo` to `pruebas` on every push to `desarrollo`. Review and merge it; merging deploys to the pruebas environment.
+4. After validation succeeds in `pruebas`, the same workflow automatically opens a pull request from `pruebas` to `produccion`. Review and merge it; merging deploys to production. Document any deployment configuration changes required by issue #12 in this pull request.
 5. Once the release candidate is validated in `produccion`, assign its version and create a version tag on that validated commit, for example `v1.0.0`.
 6. Open a pull request from `produccion` to `main` and merge the tagged release. Use a merge commit so the validated, tagged production commit remains in `main` history.
 
