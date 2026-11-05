@@ -53,10 +53,42 @@ src/
 
 ## Deployment Direction
 
-- Docker Compose is used locally to validate the same frontend and API container boundaries that will be deployed.
-- IONOS is the selected final hosting provider. The application will be deployed as containers so the ASP.NET Core API can keep Telegram integration and other server-side behavior private.
-- Hosting is not configured during feature development or validation. The IONOS setup is addressed only in the pull request from `pruebas` to `produccion`, under issue [#12](https://github.com/AbelLopez73/PersonalPortfolio/issues/12).
-- That release-candidate pull request must document the IONOS service selection, domain, HTTPS configuration, container deployment procedure, environment variables, and Telegram callback URL. Secrets are configured on IONOS and never committed to this repository.
+- Docker Compose is used locally to validate the same frontend and API container boundaries that are deployed.
+- Hosting is not configured during feature development or validation. Environments are deployed only from `pruebas` and `produccion`.
+- Secrets are configured in the hosting provider and in GitHub Actions secrets, and are never committed to this repository.
+
+### Hosting provider decision
+
+| Provider | Link | Status |
+|---|---|---|
+| Microsoft Azure | [azure.microsoft.com](https://azure.microsoft.com/) | **Selected.** Used for the current deployment because the project owner already holds the Azure certification. |
+| IONOS | [ionos.com](https://www.ionos.com/) | Evaluated alternative; available for future developments. |
+| AWS | [aws.amazon.com](https://aws.amazon.com/) | Evaluated alternative; available for future developments. |
+
+The application is packaged as containers, so moving a future project to IONOS or AWS only changes the deployment workflow, not the application.
+
+## Azure Environments
+
+The app is deployed to Azure App Service (Linux containers, Free F1 plan) with images stored in Azure Container Registry. Each environment deploys automatically with GitHub Actions (OIDC login) when its branch receives a push.
+
+| | Pruebas | Producción |
+|---|---|---|
+| Branch | `pruebas` | `produccion` |
+| Workflow | [deploy-pruebas.yml](.github/workflows/deploy-pruebas.yml) | [deploy-produccion.yml](.github/workflows/deploy-produccion.yml) |
+| Web | https://abellopezmesaportfolio-test.azurewebsites.net | https://abellopezmesaportfolio-bhg5ffe8g3c3exa0.westus3-01.azurewebsites.net |
+| API app | `abellopezmesa-api-test` | `abellopezmesa-api` |
+
+Promotion flow: `desarrollo` → `pruebas` → `main` → `produccion`. The Free plan has a daily CPU quota, so an app can be stopped until the quota resets.
+
+## Ollama Assistant Availability
+
+| Environment | Provider | Assistant status |
+|---|---|---|
+| Local (`dotnet run` / Docker Compose) | Your machine | **Working.** Connects to the local [Ollama](https://ollama.com/) server. |
+| Pruebas and Producción | Microsoft Azure | **Not working.** Azure App Service cannot reach a local Ollama server, and the Free plan cannot host an LLM. |
+| Future deployments | AWS / IONOS | **To be reviewed.** Each provider will be evaluated to see whether Ollama can be integrated. |
+
+The API reads `Ollama:BaseUrl` and `Ollama:Model` from configuration. Because Azure is the selected provider, the assistant is expected to fail there (the default `http://localhost:11434` does not exist in the Azure containers); the rest of the portfolio is not affected. When the app is deployed to [AWS](https://aws.amazon.com/) or [IONOS](https://www.ionos.com/), we will review whether an Ollama server can be hosted and pointed to through `Ollama:BaseUrl`.
 
 ## Issue and Branch Mapping
 
@@ -78,6 +110,8 @@ src/
 | 14. Profile photo and resume assets | [#14](https://github.com/AbelLopez73/PersonalPortfolio/issues/14) | `feature/issue-14-profile-photo-resume-assets` |
 | 17. Public Telegram community feed | [#17](https://github.com/AbelLopez73/PersonalPortfolio/issues/17) | `feature/issue-17-public-telegram-community-feed` |
 | 18. Public portfolio assistant powered by Ollama | [#18](https://github.com/AbelLopez73/PersonalPortfolio/issues/18) | `feature/issue-18-public-portfolio-assistant` |
+| 21. README link on the public site | [#21](https://github.com/AbelLopez73/PersonalPortfolio/issues/21) | `feature/issue-21-readme-link` |
+| 26. Remove model label from the public page | [#26](https://github.com/AbelLopez73/PersonalPortfolio/issues/26) | `feature/issue-26-remove-model-label` |
 | Workflow: integration | N/A | `desarrollo` |
 | Workflow: validation | N/A | `pruebas` |
 | Workflow: release candidate | N/A | `produccion` |
@@ -89,8 +123,8 @@ Whenever a GitHub issue or any branch is created, renamed, or removed, update th
 
 1. Implement each issue on its matching `feature/issue-...` branch.
 2. Open a pull request from the issue branch to `desarrollo`, link the issue, and merge after review and a successful build.
-3. When the integrated changes work and have been tested in `desarrollo`, open a pull request from `desarrollo` to `pruebas`.
-4. After validation succeeds in `pruebas`, open a pull request from `pruebas` to `produccion`. This is the point to define and document the IONOS deployment configuration required by issue #12.
+3. When the integrated changes work and have been tested in `desarrollo`, the **Promote** workflow ([promote.yml](.github/workflows/promote.yml)) automatically opens a pull request from `desarrollo` to `pruebas` on every push to `desarrollo`. Review and merge it; merging deploys to the pruebas environment.
+4. After validation succeeds in `pruebas`, the same workflow automatically opens a pull request from `pruebas` to `produccion`. Review and merge it; merging deploys to production. Document any deployment configuration changes required by issue #12 in this pull request.
 5. Once the release candidate is validated in `produccion`, assign its version and create a version tag on that validated commit, for example `v1.0.0`.
 6. Open a pull request from `produccion` to `main` and merge the tagged release. Use a merge commit so the validated, tagged production commit remains in `main` history.
 
