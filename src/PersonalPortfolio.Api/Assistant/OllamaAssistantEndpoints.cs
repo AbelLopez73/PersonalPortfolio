@@ -6,7 +6,8 @@ public static class OllamaAssistantEndpoints
     {
         app.MapPost("/api/assistant/chat", async (
             AssistantChatRequest? request,
-            OllamaAssistantService assistant,
+            IAssistantService assistant,
+            AssistantQuestionNotifier notifier,
             CancellationToken cancellationToken) =>
         {
             var messages = request?.Messages;
@@ -22,20 +23,22 @@ public static class OllamaAssistantEndpoints
 
             try
             {
+                await notifier.NotifyAsync(messages[^1].Content, cancellationToken);
                 var reply = await assistant.ReplyAsync(messages, cancellationToken);
                 return Results.Ok(new AssistantChatResponse(reply));
             }
             catch (HttpRequestException)
             {
                 return Results.Problem(
-                    title: "The Ollama assistant is unavailable.",
-                    detail: "Check that Ollama is running and the configured model is installed.",
+                    title: "The assistant is unavailable.",
+                    detail: "The configured AI provider (Gemini or Ollama) could not be reached.",
                     statusCode: StatusCodes.Status503ServiceUnavailable);
             }
         })
             .AllowAnonymous()
-            .WithName("ChatWithOllamaAssistant")
-            .WithSummary("Send a message to the portfolio assistant powered by Ollama")
+            .RequireRateLimiting("assistant")
+            .WithName("ChatWithAssistant")
+            .WithSummary("Send a message to the portfolio assistant (Gemini on Azure, Ollama locally)")
             .Produces<AssistantChatResponse>(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status400BadRequest)
             .ProducesProblem(StatusCodes.Status503ServiceUnavailable);
