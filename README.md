@@ -111,6 +111,7 @@ The API reads `Ollama:BaseUrl` and `Ollama:Model` from configuration. Because Az
 | 17. Public Telegram community feed | [#17](https://github.com/AbelLopez73/PersonalPortfolio/issues/17) | `feature/issue-17-public-telegram-community-feed` |
 | 18. Public portfolio assistant powered by Ollama | [#18](https://github.com/AbelLopez73/PersonalPortfolio/issues/18) | `feature/issue-18-public-portfolio-assistant` |
 | 21. README link on the public site | [#21](https://github.com/AbelLopez73/PersonalPortfolio/issues/21) | `feature/issue-21-readme-link` |
+| 26. Remove model label from the public page | [#26](https://github.com/AbelLopez73/PersonalPortfolio/issues/26) | `feature/issue-26-remove-model-label` |
 | Workflow: integration | N/A | `desarrollo` |
 | Workflow: validation | N/A | `pruebas` |
 | Workflow: release candidate | N/A | `produccion` |
