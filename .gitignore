@@ -8,3 +8,5 @@ obj/
 *.swp
 *.tmp
 *.log
+
+src/resume-sources/
