@@ -116,6 +116,7 @@ The assistant picks its provider from configuration: when `Gemini:ApiKey` is set
 | 30. Make the portfolio assistant chat work on Azure | [#30](https://github.com/AbelLopez73/PersonalPortfolio/issues/30) | `feature/issue-30-assistant-chat-azure` |
 | 40. Resume download should download the PDF | [#40](https://github.com/AbelLopez73/PersonalPortfolio/issues/40) | `feature/issue-40-resume-pdf-download` |
 | 42. Show the resume in the browser in addition to downloading it | [#42](https://github.com/AbelLopez73/PersonalPortfolio/issues/42) | `feature/issue-42-view-resume` |
+| 44. Change Developer to Software Engineer in the resume | [#44](https://github.com/AbelLopez73/PersonalPortfolio/issues/44) | `feature/issue-44-resume-title` |
 | Workflow: integration | N/A | `desarrollo` |
 | Workflow: validation | N/A | `pruebas` |
 | Workflow: release candidate | N/A | `produccion` |
