@@ -67,25 +67,33 @@
   - Page explains services and collaboration approach.
   - Includes a clear CTA to contact or the Telegram suggestions group.
 
-### 7. Suggestions feature
+### 7. Telegram community join request form
 - Type: Feature
 - Priority: High
-- Phase: Suggestions
+- Phase: Community
 - Status: Backlog
-- Description: Accept public suggestions from visitors through a Telegram-based workflow.
+- Description: Build the public form that lets visitors request access to the Telegram community.
 - Acceptance criteria:
-  - The form sends a message to the configured Telegram group.
-  - Errors are handled gracefully.
+  - The Angular form is typed, accessible, and has clear submitting, success, and failure states.
+  - A display name and optional Telegram username are collected only as context, never as proof of identity or membership.
+  - ASP.NET Core validates input and applies rate limiting and spam protection.
+  - A valid request receives a short-lived, single-use Telegram join link from the backend.
+  - No Telegram token, invite-link secret, or moderator credential reaches the browser.
+  - The form can be tested without a live Telegram provider.
 
-### 8. Telegram integration
+### 8. Telegram community bot and webhook integration
 - Type: Feature
 - Priority: High
 - Phase: Telegram
-- Status: Blocked
-- Description: Configure the Telegram bot API and delivery flow from Angular and ASP.NET Core.
+- Status: Backlog
+- Description: Integrate the server-side Telegram community bot for invite links, join requests, and moderated group-message ingestion.
 - Acceptance criteria:
-  - Bot token and chat ID are managed securely.
-  - Messages are delivered reliably.
+  - Bot token and community chat ID are supplied only through server-side configuration.
+  - The bot creates short-lived, single-use invite links that create Telegram join requests.
+  - A protected webhook receives join requests and group messages, and processes duplicate updates safely.
+  - The bot approves or declines requests through the moderation workflow and receives only the group messages needed for moderation.
+  - Provider timeouts, invalid webhook traffic, and rate limits are handled without logging secrets or private message contents.
+  - Real provider calls can be replaced by fakes in automated tests.
 
 ### 9. Analytics integration
 - Type: Feature
@@ -98,16 +106,18 @@
   - Analytics are enabled.
   - Privacy scope is documented.
 
-### 10. Admin panel
+### 10. Owner moderation workspace
 - Type: Feature
 - Priority: High
-- Phase: Admin Panel
+- Phase: Moderation
 - Status: Blocked
-- Description: Create a protected administration panel for content updates and moderation.
+- Description: Provide a private owner workspace to moderate join requests and decide which community messages may be published.
 - Acceptance criteria:
-  - Login flow is defined.
-  - Authentication provider is selected.
-  - Access is restricted.
+  - The owner authentication mechanism is selected and documented without using Telegram Login.
+  - Anonymous visitors cannot access moderation data or actions.
+  - The workspace can approve or decline join requests and approve, hide, or remove a message's public-feed eligibility.
+  - A message is never public until a moderator explicitly approves it.
+  - Moderation state is persistent and testable, and secrets never reach Angular.
 
 ### 11. Accessibility and SEO
 - Type: Feature
@@ -130,6 +140,33 @@
   - Deployment succeeds.
   - App health is checked.
 
+### 17. Public Telegram community feed
+- Type: Feature
+- Priority: High
+- Phase: Community
+- Status: Backlog
+- Description: Publish a safe, moderated feed from approved Telegram community messages.
+- Acceptance criteria:
+  - Only messages explicitly approved in the owner moderation workspace are available publicly.
+  - Telegram identifiers, contact information, and unsupported media are redacted or omitted by default.
+  - The Angular feed has loading, empty, and error states and works on mobile and desktop.
+  - The public API returns only fields needed to render approved feed entries.
+  - Tests cover publication filtering and redaction.
+
+### 18. Public portfolio assistant powered by Ollama
+- Type: Feature
+- Priority: Medium
+- Phase: Public Site
+- Status: Backlog
+- Description: Add a public conversational assistant that answers questions using only approved portfolio information.
+- Acceptance criteria:
+  - Visitors can ask questions from the portfolio UI and see pending, success, and error states.
+  - The ASP.NET Core API validates bounded chat history and delegates to a configurable Ollama model.
+  - The assistant does not invent employment, credentials, education, or contact details that are not documented.
+  - Ollama configuration and provider access remain server-side; no secrets are exposed to the browser.
+  - API behavior and frontend integration are covered by automated tests, including provider-unavailable behavior.
+  - Local setup and the Ollama dependency are documented.
+
 ## Pending Problems
 - Free hosting sleep and quota limitations.
 - Telegram delivery delay after API wake-up.
@@ -145,7 +182,7 @@
 
 ## GitHub issues and branch mapping
 
-| Issue | GitHub issue | Working branch |
+| Issue or branch role | GitHub issue | Branch |
 |---|---|---|
 | 1. Foundation setup | [#1](https://github.com/AbelLopez73/PersonalPortfolio/issues/1) | `feature/issue-1-foundation-setup` |
 | 2. Public site landing page | [#2](https://github.com/AbelLopez73/PersonalPortfolio/issues/2) | `feature/issue-2-public-site-landing-page` |
@@ -153,14 +190,20 @@
 | 4. Portfolio showcase | [#4](https://github.com/AbelLopez73/PersonalPortfolio/issues/4) | `feature/issue-4-portfolio-showcase` |
 | 5. Blog section | [#5](https://github.com/AbelLopez73/PersonalPortfolio/issues/5) | `feature/issue-5-blog-section` |
 | 6. Collaborations section | [#6](https://github.com/AbelLopez73/PersonalPortfolio/issues/6) | `feature/issue-6-collaborations-section` |
-| 7. Suggestions feature | [#7](https://github.com/AbelLopez73/PersonalPortfolio/issues/7) | `feature/issue-7-suggestions-feature` |
-| 8. Telegram webhook integration | [#8](https://github.com/AbelLopez73/PersonalPortfolio/issues/8) | `feature/issue-8-telegram-webhook-integration` |
+| 7. Telegram community join request form | [#7](https://github.com/AbelLopez73/PersonalPortfolio/issues/7) | `feature/issue-7-suggestions-feature` |
+| 8. Telegram community bot and webhook integration | [#8](https://github.com/AbelLopez73/PersonalPortfolio/issues/8) | `feature/issue-8-telegram-webhook-integration` |
 | 9. Analytics integration | [#9](https://github.com/AbelLopez73/PersonalPortfolio/issues/9) | `feature/issue-9-analytics-integration` |
-| 10. Admin panel | [#10](https://github.com/AbelLopez73/PersonalPortfolio/issues/10) | `feature/issue-10-admin-panel` |
+| 10. Owner moderation workspace | [#10](https://github.com/AbelLopez73/PersonalPortfolio/issues/10) | `feature/issue-10-admin-panel` |
 | 11. Accessibility and SEO | [#11](https://github.com/AbelLopez73/PersonalPortfolio/issues/11) | `feature/issue-11-accessibility-seo` |
 | 12. Testing and deployment | [#12](https://github.com/AbelLopez73/PersonalPortfolio/issues/12) | `feature/issue-12-testing-deployment` |
 | 13. Multiple profile variants | [#13](https://github.com/AbelLopez73/PersonalPortfolio/issues/13) | `feature/issue-13-profile-variants` |
 | 14. Profile photo and resume assets | [#14](https://github.com/AbelLopez73/PersonalPortfolio/issues/14) | `feature/issue-14-profile-photo-resume-assets` |
+| 17. Public Telegram community feed | [#17](https://github.com/AbelLopez73/PersonalPortfolio/issues/17) | `feature/issue-17-public-telegram-community-feed` |
+| 18. Public portfolio assistant powered by Ollama | [#18](https://github.com/AbelLopez73/PersonalPortfolio/issues/18) | `feature/issue-18-public-portfolio-assistant` |
+| Workflow: integration | N/A | `desarrollo` |
+| Workflow: validation | N/A | `pruebas` |
+| Workflow: release candidate | N/A | `produccion` |
+| Workflow: released versions | N/A | `main` |
 
 ## Branch and promotion workflow
 
@@ -173,3 +216,5 @@
 - Promote changes with pull requests in this order: `desarrollo` -> `pruebas` -> `produccion` -> `main`.
 
 The branches and issues above have been created in GitHub. Branch protection and required pull-request checks are not configured yet.
+
+Whenever a GitHub issue or any branch is created, renamed, or removed, update this table and the matching table in `README.md` in the same pull request. Do not merge that pull request until both tables match.
