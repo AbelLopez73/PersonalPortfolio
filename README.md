@@ -111,6 +111,7 @@ The API reads `Ollama:BaseUrl` and `Ollama:Model` from configuration. Because Az
 | 17. Public Telegram community feed | [#17](https://github.com/AbelLopez73/PersonalPortfolio/issues/17) | `feature/issue-17-public-telegram-community-feed` |
 | 18. Public portfolio assistant powered by Ollama | [#18](https://github.com/AbelLopez73/PersonalPortfolio/issues/18) | `feature/issue-18-public-portfolio-assistant` |
 | 21. README link on the public site | [#21](https://github.com/AbelLopez73/PersonalPortfolio/issues/21) | `feature/issue-21-readme-link` |
+| 30. Make the portfolio assistant chat work on Azure | [#30](https://github.com/AbelLopez73/PersonalPortfolio/issues/30) | `feature/issue-30-assistant-chat-azure` |
 | Workflow: integration | N/A | `desarrollo` |
 | Workflow: validation | N/A | `pruebas` |
 | Workflow: release candidate | N/A | `produccion` |
