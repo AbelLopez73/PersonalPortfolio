@@ -1,6 +1,8 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.HttpOverrides;
+using PersonalPortfolio.Api.Assistant;
 using PersonalPortfolio.Api.Admin;
 using PersonalPortfolio.Api.Notifications;
 
@@ -29,12 +31,25 @@ builder.Services.AddCors(options =>
     });
 });
 
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+    options.KnownNetworks.Clear();
+    options.KnownProxies.Clear();
+});
+
 builder.Services.AddSignalR();
 builder.Services.AddSingleton<AdminPresenceTracker>();
 builder.Services.AddHttpClient("TelegramBot", client =>
     client.Timeout = TimeSpan.FromSeconds(8));
 builder.Services.AddHttpClient("Ntfy", client =>
     client.Timeout = TimeSpan.FromSeconds(5));
+builder.Services.AddHttpClient<OllamaAssistantService>((services, client) =>
+{
+    var configuration = services.GetRequiredService<IConfiguration>();
+    client.BaseAddress = new Uri(configuration["Ollama:BaseUrl"] ?? "http://localhost:11434");
+    client.Timeout = TimeSpan.FromMinutes(3);
+});
 builder.Services.AddScoped<ISuggestionNotificationService, SuggestionNotificationService>();
 builder.Services.AddAuthorization(options =>
 {
@@ -144,6 +159,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseForwardedHeaders();
 app.UseHttpsRedirection();
 app.UseCors("AllowFrontend");
 app.UseAuthentication();
@@ -170,6 +186,7 @@ app.MapGet("/api/portfolio", () => new
 });
 
 app.MapControllers();
+app.MapOllamaAssistantEndpoints();
 app.MapAdminEndpoints();
 app.MapHub<AdminPresenceHub>("/hubs/admin")
     .RequireAuthorization(AdminAuthentication.AdminPolicy);

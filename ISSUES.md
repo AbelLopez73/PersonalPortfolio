@@ -67,32 +67,33 @@
   - Page explains services and collaboration approach.
   - Includes a clear CTA to contact or the Telegram suggestions group.
 
-### 7. Suggestions feature
+### 7. Telegram community join request form
 - Type: Feature
 - Priority: High
-- Phase: Suggestions
+- Phase: Community
 - Status: Backlog
-- Description: Accept public suggestions through a validated form and route them according to the authenticated owner's active presence.
+- Description: Build the public form that lets visitors request access to the Telegram community.
 - Acceptance criteria:
-  - Angular uses typed reactive form validation and clear submitting, success, and error states.
+  - The Angular form is typed, accessible, and has clear submitting, success, and failure states.
+  - A display name and optional Telegram username are collected only as context, never as proof of identity or membership.
   - ASP.NET Core validates input and applies rate limiting and spam protection.
-  - Accepted suggestions are delivered over the private SignalR hub while the owner is connected.
-  - The complete suggestion is stored in the owner's private Telegram chat; delivery is silent while connected and notifies normally while absent.
-  - When absent, ntfy sends a mobile push preview capped at 30 characters with obvious email and phone patterns redacted.
-  - The full message is never sent to ntfy, provider errors are isolated, and duplicate submissions are prevented or safely reported.
+  - A valid request receives a short-lived, single-use Telegram join link from the backend.
+  - No Telegram token, invite-link secret, or moderator credential reaches the browser.
+  - The form can be tested without a live Telegram provider.
 
-### 8. Telegram integration
+### 8. Telegram community bot and webhook integration
 - Type: Feature
 - Priority: High
 - Phase: Telegram
-- Status: Blocked
-- Description: Configure backend-mediated outbound delivery with the Telegram Bot API and ntfy for short offline mobile alerts.
+- Status: Backlog
+- Description: Integrate the server-side Telegram community bot for invite links, join requests, and moderated group-message ingestion.
 - Acceptance criteria:
-  - Telegram Bot API token and owner private chat ID are supplied through secure server-side configuration.
-  - Full suggestions are sent to the owner's private Telegram chat; messages are silent when the owner is online and notify normally when absent.
-  - When the owner is absent, ntfy receives only the sanitized short preview; its topic is random and kept out of the frontend.
-  - Telegram delivery has bounded timeouts and failures are handled without exposing secrets or message contents in logs.
-  - Provider clients are testable with fakes; no inbound Telegram webhook or polling loop is used for this outbound flow.
+  - Bot token and community chat ID are supplied only through server-side configuration.
+  - The bot creates short-lived, single-use invite links that create Telegram join requests.
+  - A protected webhook receives join requests and group messages, and processes duplicate updates safely.
+  - The bot approves or declines requests through the moderation workflow and receives only the group messages needed for moderation.
+  - Provider timeouts, invalid webhook traffic, and rate limits are handled without logging secrets or private message contents.
+  - Real provider calls can be replaced by fakes in automated tests.
 
 ### 9. Analytics integration
 - Type: Feature
@@ -105,20 +106,18 @@
   - Analytics are enabled.
   - Privacy scope is documented.
 
-### 10. Admin panel
+### 10. Owner moderation workspace
 - Type: Feature
 - Priority: High
-- Phase: Admin Panel
+- Phase: Moderation
 - Status: Blocked
-- Description: Add owner authentication to the existing site using Telegram Login and provide a private real-time admin presence session.
+- Description: Provide a private owner workspace to moderate join requests and decide which community messages may be published.
 - Acceptance criteria:
-  - Telegram OIDC Authorization Code flow with PKCE is validated server-side.
-  - Only the configured numeric Telegram owner ID can establish an admin session.
-  - The backend issues a secure HttpOnly cookie; BotFather client secret and bot token never reach Angular.
-  - A private SignalR hub tracks multiple owner-device connections and expires presence after disconnect/timeout.
-  - Anonymous visitors cannot view admin presence or connect to the admin hub.
-  - The existing site provides sign-in/sign-out and a live connection status without requiring a separate dashboard.
-  - Setup and deployment prerequisites are documented; login stays disabled when credentials are not configured.
+  - The owner authentication mechanism is selected and documented without using Telegram Login.
+  - Anonymous visitors cannot access moderation data or actions.
+  - The workspace can approve or decline join requests and approve, hide, or remove a message's public-feed eligibility.
+  - A message is never public until a moderator explicitly approves it.
+  - Moderation state is persistent and testable, and secrets never reach Angular.
 
 ### 11. Accessibility and SEO
 - Type: Feature
@@ -140,6 +139,33 @@
   - Unit and e2e coverage is added.
   - Deployment succeeds.
   - App health is checked.
+
+### 17. Public Telegram community feed
+- Type: Feature
+- Priority: High
+- Phase: Community
+- Status: Backlog
+- Description: Publish a safe, moderated feed from approved Telegram community messages.
+- Acceptance criteria:
+  - Only messages explicitly approved in the owner moderation workspace are available publicly.
+  - Telegram identifiers, contact information, and unsupported media are redacted or omitted by default.
+  - The Angular feed has loading, empty, and error states and works on mobile and desktop.
+  - The public API returns only fields needed to render approved feed entries.
+  - Tests cover publication filtering and redaction.
+
+### 18. Public portfolio assistant powered by Ollama
+- Type: Feature
+- Priority: Medium
+- Phase: Public Site
+- Status: Backlog
+- Description: Add a public conversational assistant that answers questions using only approved portfolio information.
+- Acceptance criteria:
+  - Visitors can ask questions from the portfolio UI and see pending, success, and error states.
+  - The ASP.NET Core API validates bounded chat history and delegates to a configurable Ollama model.
+  - The assistant does not invent employment, credentials, education, or contact details that are not documented.
+  - Ollama configuration and provider access remain server-side; no secrets are exposed to the browser.
+  - API behavior and frontend integration are covered by automated tests, including provider-unavailable behavior.
+  - Local setup and the Ollama dependency are documented.
 
 ## Pending Problems
 - Free hosting sleep and quota limitations.
@@ -164,15 +190,17 @@
 | 4. Portfolio showcase | [#4](https://github.com/AbelLopez73/PersonalPortfolio/issues/4) | `feature/issue-4-portfolio-showcase` |
 | 5. Blog section | [#5](https://github.com/AbelLopez73/PersonalPortfolio/issues/5) | `feature/issue-5-blog-section` |
 | 6. Collaborations section | [#6](https://github.com/AbelLopez73/PersonalPortfolio/issues/6) | `feature/issue-6-collaborations-section` |
-| 7. Suggestions feature | [#7](https://github.com/AbelLopez73/PersonalPortfolio/issues/7) | `feature/issue-7-suggestions-feature` |
-| 8. Telegram webhook integration | [#8](https://github.com/AbelLopez73/PersonalPortfolio/issues/8) | `feature/issue-8-telegram-webhook-integration` |
+| 7. Telegram community join request form | [#7](https://github.com/AbelLopez73/PersonalPortfolio/issues/7) | `feature/issue-7-suggestions-feature` |
+| 8. Telegram community bot and webhook integration | [#8](https://github.com/AbelLopez73/PersonalPortfolio/issues/8) | `feature/issue-8-telegram-webhook-integration` |
 | 9. Analytics integration | [#9](https://github.com/AbelLopez73/PersonalPortfolio/issues/9) | `feature/issue-9-analytics-integration` |
-| 10. Admin panel | [#10](https://github.com/AbelLopez73/PersonalPortfolio/issues/10) | `feature/issue-10-admin-panel` |
+| 10. Owner moderation workspace | [#10](https://github.com/AbelLopez73/PersonalPortfolio/issues/10) | `feature/issue-10-admin-panel` |
 | 11. Accessibility and SEO | [#11](https://github.com/AbelLopez73/PersonalPortfolio/issues/11) | `feature/issue-11-accessibility-seo` |
 | 12. Testing and deployment | [#12](https://github.com/AbelLopez73/PersonalPortfolio/issues/12) | `feature/issue-12-testing-deployment` |
 | 13. Multiple profile variants | [#13](https://github.com/AbelLopez73/PersonalPortfolio/issues/13) | `feature/issue-13-profile-variants` |
 | 14. Profile photo and resume assets | [#14](https://github.com/AbelLopez73/PersonalPortfolio/issues/14) | `feature/issue-14-profile-photo-resume-assets` |
-| 20. Owner notifications for suggestions | [#20](https://github.com/AbelLopez73/PersonalPortfolio/issues/20) | `feature/issue-20-owner-notifications` |
+| 17. Public Telegram community feed | [#17](https://github.com/AbelLopez73/PersonalPortfolio/issues/17) | `feature/issue-17-public-telegram-community-feed` |
+| 18. Public portfolio assistant powered by Ollama | [#18](https://github.com/AbelLopez73/PersonalPortfolio/issues/18) | `feature/issue-18-public-portfolio-assistant` |
+| 21. README link on the public site | [#21](https://github.com/AbelLopez73/PersonalPortfolio/issues/21) | `feature/issue-21-readme-link` |
 | Workflow: integration | N/A | `desarrollo` |
 | Workflow: validation | N/A | `pruebas` |
 | Workflow: release candidate | N/A | `produccion` |

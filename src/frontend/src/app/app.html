@@ -109,8 +109,51 @@
     <p class="contact-copy">
       I’m open to product engineering, operations, logistics and technical collaboration opportunities.
     </p>
-    <div class="resume-row">
-      <a class="primary" [href]="resumeUrl()" target="_blank" rel="noopener noreferrer">Download {{ resumeLabel() }}</a>
+    <ul class="resume-row" style="list-style: disc; padding-left: 1.25rem; display: grid; gap: 0.75rem;">
+      <li><a class="primary" [href]="resumeUrl()" target="_blank" rel="noopener noreferrer">Download {{ resumeLabel() }}</a></li>
+      <li><a class="secondary" href="https://github.com/AbelLopez73/PersonalPortfolio/blob/main/README.md" target="_blank" rel="noopener noreferrer">View project README on GitHub</a></li>
+    </ul>
+  </section>
+
+  <section class="section assistant-section" id="assistant">
+    <div class="assistant-copy">
+      <p class="eyebrow">Ollama assistant</p>
+      <h2>Ask about my work</h2>
+      <p class="contact-copy">Get answers about my experience, skills, and projects.</p>
+      <span class="assistant-model">deepseek-r1:8b · local</span>
+    </div>
+
+    <div class="assistant-chat">
+      <div class="assistant-messages" aria-live="polite" aria-label="Conversation">
+        @if (chatMessages().length === 0) {
+          <p class="assistant-welcome">Ask me about Abel's experience, technical skills, or projects.</p>
+        }
+        @for (message of chatMessages(); track $index) {
+          <p class="assistant-message" [class.user-message]="message.role === 'user'">
+            {{ message.content }}
+          </p>
+        }
+        @if (chatPending()) {
+          <p class="assistant-pending" role="status">Thinking...</p>
+        }
+      </div>
+
+      <form class="assistant-form" (submit)="sendChatMessage($event)">
+        <textarea
+          id="assistant-prompt"
+          aria-label="Your message"
+          rows="2"
+          maxlength="2000"
+          placeholder="Ask a question..."
+          [value]="chatDraft()"
+          [disabled]="chatPending()"
+          (input)="updateChatDraft($event)"
+        ></textarea>
+        <button type="submit" [disabled]="chatPending() || !chatDraft().trim()">Send</button>
+      </form>
+      @if (chatError()) {
+        <p class="assistant-error" role="alert">The assistant is unavailable. Check that Ollama is running.</p>
+      }
     </div>
   </section>
 </main>
