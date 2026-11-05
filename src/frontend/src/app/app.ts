@@ -96,7 +96,7 @@ export class App implements OnInit {
         },
       ],
       resumeLabel: 'Software Engineer Resume',
-      resumeUrl: '#',
+      resumeUrl: '_ResumeLast/PDFs/Abel%20Lopez.resume.pdf',
     },
     {
       id: 'warehouse-associate',
@@ -131,7 +131,7 @@ export class App implements OnInit {
         },
       ],
       resumeLabel: 'Warehouse Resume',
-      resumeUrl: '#',
+      resumeUrl: '_ResumeLast/PDFs/Abel%20Lopez.resume-W.pdf',
     },
     {
       id: 'professional-driver',
@@ -166,7 +166,7 @@ export class App implements OnInit {
         },
       ],
       resumeLabel: 'Driver Resume',
-      resumeUrl: '#',
+      resumeUrl: '_ResumeLast/PDFs/Abel%20Lopez.resume.pdf',
     },
   ];
 
