@@ -114,6 +114,7 @@ The assistant picks its provider from configuration: when `Gemini:ApiKey` is set
 | 26. Remove model label from the public page | [#26](https://github.com/AbelLopez73/PersonalPortfolio/issues/26) | `feature/issue-26-remove-model-label` |
 | 28. Clarify Ollama assistant availability on the public page | [#28](https://github.com/AbelLopez73/PersonalPortfolio/issues/28) | `feature/issue-28-clarify-ollama-notice` |
 | 30. Make the portfolio assistant chat work on Azure | [#30](https://github.com/AbelLopez73/PersonalPortfolio/issues/30) | `feature/issue-30-assistant-chat-azure` |
+| 40. Resume download should download the PDF | [#40](https://github.com/AbelLopez73/PersonalPortfolio/issues/40) | `feature/issue-40-resume-pdf-download` |
 | Workflow: integration | N/A | `desarrollo` |
 | Workflow: validation | N/A | `pruebas` |
 | Workflow: release candidate | N/A | `produccion` |
