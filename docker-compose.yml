@@ -1,0 +1,23 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: src/PersonalPortfolio.Api/Dockerfile
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:8080
+      Frontend__AllowedOrigins__0: http://localhost:4200
+      Ollama__BaseUrl: http://host.docker.internal:11434
+      Ollama__Model: deepseek-r1:8b
+    ports:
+      - "5016:8080"
+
+  frontend:
+    build:
+      context: .
+      dockerfile: src/frontend/Dockerfile
+    depends_on:
+      - api
+    ports:
+      - "4200:80"
+

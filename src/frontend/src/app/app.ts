@@ -1,4 +1,6 @@
-import { Component, computed, signal } from '@angular/core';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import { AdminPresenceService } from './admin-presence.service';
+import { AssistantMessage, OllamaAssistantService } from './ollama-assistant.service';
 
 type Highlight = {
   label: string;
@@ -35,8 +37,14 @@ type ProfileVariant = {
   styleUrl: './app.scss',
   templateUrl: './app.html',
 })
-export class App {
+export class App implements OnInit {
   protected readonly title = signal('Abel López');
+  protected readonly adminPresence = inject(AdminPresenceService);
+  protected readonly assistant = inject(OllamaAssistantService);
+  protected readonly chatMessages = signal<AssistantMessage[]>([]);
+  protected readonly chatDraft = signal('');
+  protected readonly chatPending = signal(false);
+  protected readonly chatError = signal(false);
 
   protected readonly variants: ProfileVariant[] = [
     {
@@ -175,9 +183,50 @@ export class App {
   protected readonly resumeLabel = computed(() => this.currentVariant().resumeLabel);
   protected readonly resumeUrl = computed(() => this.currentVariant().resumeUrl);
 
+  ngOnInit(): void {
+    void this.adminPresence.initialize();
+  }
+
   protected selectVariant(variantId: string): void {
     const variant = this.variants.find(item => item.id === variantId) ?? this.variants[0];
     this.selectedVariantId.set(variant.id);
     this.currentVariant.set(variant);
+  }
+
+  protected logoutAdmin(): void {
+    void this.adminPresence.logout();
+  }
+
+  protected updateChatDraft(event: Event): void {
+    this.chatDraft.set((event.target as HTMLTextAreaElement).value);
+  }
+
+  protected sendChatMessage(event: Event): void {
+    event.preventDefault();
+    const content = this.chatDraft().trim();
+
+    if (!content || this.chatPending()) {
+      return;
+    }
+
+    const messages = [...this.chatMessages(), { role: 'user' as const, content }];
+    this.chatMessages.set(messages);
+    this.chatDraft.set('');
+    this.chatPending.set(true);
+    this.chatError.set(false);
+
+    this.assistant.chat(messages.slice(-16)).subscribe({
+      next: response => {
+        this.chatMessages.update(current => [
+          ...current,
+          { role: 'assistant', content: response.reply },
+        ]);
+        this.chatPending.set(false);
+      },
+      error: () => {
+        this.chatError.set(true);
+        this.chatPending.set(false);
+      },
+    });
   }
 }
