@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using System.Threading.RateLimiting;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.HttpOverrides;
@@ -49,6 +50,29 @@ builder.Services.AddHttpClient<OllamaAssistantService>((services, client) =>
     var configuration = services.GetRequiredService<IConfiguration>();
     client.BaseAddress = new Uri(configuration["Ollama:BaseUrl"] ?? "http://localhost:11434");
     client.Timeout = TimeSpan.FromMinutes(3);
+});
+builder.Services.AddHttpClient<GeminiAssistantService>(client =>
+{
+    client.BaseAddress = new Uri("https://generativelanguage.googleapis.com");
+    client.Timeout = TimeSpan.FromSeconds(30);
+});
+// Gemini is used when an API key is configured (Azure); otherwise Ollama is used (local).
+builder.Services.AddScoped<IAssistantService>(services =>
+    string.IsNullOrWhiteSpace(services.GetRequiredService<IConfiguration>()["Gemini:ApiKey"])
+        ? services.GetRequiredService<OllamaAssistantService>()
+        : services.GetRequiredService<GeminiAssistantService>());
+builder.Services.AddScoped<AssistantQuestionNotifier>();
+builder.Services.AddRateLimiter(options =>
+{
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+    options.AddPolicy("assistant", context =>
+        RateLimitPartition.GetFixedWindowLimiter(
+            context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+            _ => new FixedWindowRateLimiterOptions
+            {
+                PermitLimit = 10,
+                Window = TimeSpan.FromMinutes(1),
+            }));
 });
 builder.Services.AddScoped<ISuggestionNotificationService, SuggestionNotificationService>();
 builder.Services.AddAuthorization(options =>
@@ -164,6 +188,7 @@ app.UseHttpsRedirection();
 app.UseCors("AllowFrontend");
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseRateLimiter();
 
 app.MapGet("/api/portfolio", () => new
 {
