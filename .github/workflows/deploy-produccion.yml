@@ -1,0 +1,41 @@
+name: Deploy produccion
+
+on:
+  push:
+    branches: [produccion]
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  RESOURCE_GROUP: Personal
+  ACR_NAME: acrabelportfolio
+  WEB_APP: abellopezmesaPortfolio
+  API_APP: abellopezmesa-api
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Build images in ACR
+        run: |
+          az acr build -r $ACR_NAME -t web:${{ github.sha }} -t web:latest -f src/frontend/Dockerfile .
+          az acr build -r $ACR_NAME -t api:${{ github.sha }} -t api:latest -f src/PersonalPortfolio.Api/Dockerfile .
+
+      - name: Deploy API
+        run: |
+          az webapp config set -g $RESOURCE_GROUP -n $API_APP --linux-fx-version "DOCKER|$ACR_NAME.azurecr.io/api:${{ github.sha }}"
+
+      - name: Deploy web
+        run: |
+          az webapp config set -g $RESOURCE_GROUP -n $WEB_APP --linux-fx-version "DOCKER|$ACR_NAME.azurecr.io/web:${{ github.sha }}"
