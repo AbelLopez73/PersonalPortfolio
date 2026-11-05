@@ -39,6 +39,12 @@ builder.Services.Configure<ForwardedHeadersOptions>(options =>
 });
 
 builder.Services.AddSignalR();
+builder.Services.AddHttpClient<OllamaAssistantService>((services, client) =>
+{
+    var configuration = services.GetRequiredService<IConfiguration>();
+    client.BaseAddress = new Uri(configuration["Ollama:BaseUrl"] ?? "http://localhost:11434");
+    client.Timeout = TimeSpan.FromMinutes(3);
+});
 builder.Services.AddSingleton<AdminPresenceTracker>();
 builder.Services.AddHttpClient("TelegramBot", client =>
     client.Timeout = TimeSpan.FromSeconds(8));
