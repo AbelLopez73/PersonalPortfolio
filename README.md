@@ -80,6 +80,16 @@ The app is deployed to Azure App Service (Linux containers, Free F1 plan) with i
 
 Promotion flow: `desarrollo` → `pruebas` → `main` → `produccion`. The Free plan has a daily CPU quota, so an app can be stopped until the quota resets.
 
+## Ollama Assistant Availability
+
+| Environment | Provider | Assistant status |
+|---|---|---|
+| Local (`dotnet run` / Docker Compose) | Your machine | **Working.** Connects to the local [Ollama](https://ollama.com/) server. |
+| Pruebas and Producción | Microsoft Azure | **Not working.** Azure App Service cannot reach a local Ollama server, and the Free plan cannot host an LLM. |
+| Future deployments | AWS / IONOS | **To be reviewed.** Each provider will be evaluated to see whether Ollama can be integrated. |
+
+The API reads `Ollama:BaseUrl` and `Ollama:Model` from configuration. Because Azure is the selected provider, the assistant is expected to fail there (the default `http://localhost:11434` does not exist in the Azure containers); the rest of the portfolio is not affected. When the app is deployed to [AWS](https://aws.amazon.com/) or [IONOS](https://www.ionos.com/), we will review whether an Ollama server can be hosted and pointed to through `Ollama:BaseUrl`.
+
 ## Issue and Branch Mapping
 
 | Issue or branch role | GitHub issue | Branch |
