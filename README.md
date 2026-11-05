@@ -58,6 +58,19 @@ src/
 - Hosting is not configured during feature development or validation. The IONOS setup is addressed only in the pull request from `pruebas` to `produccion`, under issue [#12](https://github.com/AbelLopez73/PersonalPortfolio/issues/12).
 - That release-candidate pull request must document the IONOS service selection, domain, HTTPS configuration, container deployment procedure, environment variables, and Telegram callback URL. Secrets are configured on IONOS and never committed to this repository.
 
+## Azure Environments
+
+The app is deployed to Azure App Service (Linux containers, Free F1 plan) with images stored in Azure Container Registry. Each environment deploys automatically with GitHub Actions (OIDC login) when its branch receives a push.
+
+| | Pruebas | Producción |
+|---|---|---|
+| Branch | `pruebas` | `produccion` |
+| Workflow | [deploy-pruebas.yml](.github/workflows/deploy-pruebas.yml) | [deploy-produccion.yml](.github/workflows/deploy-produccion.yml) |
+| Web | https://abellopezmesaportfolio-test.azurewebsites.net | https://abellopezmesaportfolio-bhg5ffe8g3c3exa0.westus3-01.azurewebsites.net |
+| API app | `abellopezmesa-api-test` | `abellopezmesa-api` |
+
+Promotion flow: `desarrollo` → `pruebas` → `main` → `produccion`. The Free plan has a daily CPU quota, so an app can be stopped until the quota resets.
+
 ## Issue and Branch Mapping
 
 | Issue or branch role | GitHub issue | Branch |
