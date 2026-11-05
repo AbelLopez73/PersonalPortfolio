@@ -2,6 +2,7 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using PersonalPortfolio.Api.Admin;
+using PersonalPortfolio.Api.Notifications;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,6 +31,11 @@ builder.Services.AddCors(options =>
 
 builder.Services.AddSignalR();
 builder.Services.AddSingleton<AdminPresenceTracker>();
+builder.Services.AddHttpClient("TelegramBot", client =>
+    client.Timeout = TimeSpan.FromSeconds(8));
+builder.Services.AddHttpClient("Ntfy", client =>
+    client.Timeout = TimeSpan.FromSeconds(5));
+builder.Services.AddScoped<ISuggestionNotificationService, SuggestionNotificationService>();
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy(AdminAuthentication.AdminPolicy, policy =>
