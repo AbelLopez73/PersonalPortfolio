@@ -203,6 +203,7 @@
 | 21. README link on the public site | [#21](https://github.com/AbelLopez73/PersonalPortfolio/issues/21) | `feature/issue-21-readme-link` |
 | 26. Remove model label from the public page | [#26](https://github.com/AbelLopez73/PersonalPortfolio/issues/26) | `feature/issue-26-remove-model-label` |
 | 28. Clarify Ollama assistant availability on the public page | [#28](https://github.com/AbelLopez73/PersonalPortfolio/issues/28) | `feature/issue-28-clarify-ollama-notice` |
+| 30. Make the portfolio assistant chat work on Azure | [#30](https://github.com/AbelLopez73/PersonalPortfolio/issues/30) | `feature/issue-30-assistant-chat-azure` |
 | Workflow: integration | N/A | `desarrollo` |
 | Workflow: validation | N/A | `pruebas` |
 | Workflow: release candidate | N/A | `produccion` |
