@@ -85,7 +85,7 @@ Promotion flow: `desarrollo` Ã¢â€ â€™ `pruebas` Ã¢â€ â€™ `
 | Environment | Provider | Assistant status |
 |---|---|---|
 | Local (`dotnet run` / Docker Compose) | Your machine | **Working.** Connects to the local [Ollama](https://ollama.com/) server. |
-| Pruebas and Producción | Microsoft Azure | **Working with Google Gemini.** Azure App Service cannot reach a local Ollama server and the Free plan cannot host an LLM, so the assistant uses Gemini here (issue [#30](https://github.com/AbelLopez73/PersonalPortfolio/issues/30)). |
+| Pruebas and Producción | Microsoft Azure | **In progress with Google Gemini.** Azure App Service cannot reach a local Ollama server and the Free plan cannot host an LLM, so the assistant will use Gemini here (issue [#30](https://github.com/AbelLopez73/PersonalPortfolio/issues/30)). |
 | Future deployments | AWS / IONOS | **To be reviewed.** When these versions are built, we will review whether the assistant can work with Ollama, hosted and reached through `Ollama:BaseUrl`. |
 
 The API reads `Ollama:BaseUrl` and `Ollama:Model` from configuration. Because Azure is the selected provider, the assistant is expected to fail there (the default `http://localhost:11434` does not exist in the Azure containers); the rest of the portfolio is not affected. When the app is deployed to [AWS](https://aws.amazon.com/) or [IONOS](https://www.ionos.com/), we will review whether an Ollama server can be hosted and pointed to through `Ollama:BaseUrl`.
