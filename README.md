@@ -71,22 +71,22 @@ The application is packaged as containers, so moving a future project to IONOS o
 
 The app is deployed to Azure App Service (Linux containers, Free F1 plan) with images stored in Azure Container Registry. Each environment deploys automatically with GitHub Actions (OIDC login) when its branch receives a push.
 
-| | Pruebas | ProducciÃ³n |
+| | Pruebas | ProducciÃƒÂ³n |
 |---|---|---|
 | Branch | `pruebas` | `produccion` |
 | Workflow | [deploy-pruebas.yml](.github/workflows/deploy-pruebas.yml) | [deploy-produccion.yml](.github/workflows/deploy-produccion.yml) |
 | Web | https://abellopezmesaportfolio-test.azurewebsites.net | https://abellopezmesaportfolio-bhg5ffe8g3c3exa0.westus3-01.azurewebsites.net |
 | API app | `abellopezmesa-api-test` | `abellopezmesa-api` |
 
-Promotion flow: `desarrollo` â†’ `pruebas` â†’ `main` â†’ `produccion`. The Free plan has a daily CPU quota, so an app can be stopped until the quota resets.
+Promotion flow: `desarrollo` Ã¢â€ â€™ `pruebas` Ã¢â€ â€™ `main` Ã¢â€ â€™ `produccion`. The Free plan has a daily CPU quota, so an app can be stopped until the quota resets.
 
 ## Ollama Assistant Availability
 
 | Environment | Provider | Assistant status |
 |---|---|---|
 | Local (`dotnet run` / Docker Compose) | Your machine | **Working.** Connects to the local [Ollama](https://ollama.com/) server. |
-| Pruebas and ProducciÃ³n | Microsoft Azure | **Not working.** Azure App Service cannot reach a local Ollama server, and the Free plan cannot host an LLM. |
-| Future deployments | AWS / IONOS | **To be reviewed.** Each provider will be evaluated to see whether Ollama can be integrated. |
+| Pruebas and Producción | Microsoft Azure | **In progress with Google Gemini.** Azure App Service cannot reach a local Ollama server and the Free plan cannot host an LLM, so the assistant will use Gemini here (issue [#30](https://github.com/AbelLopez73/PersonalPortfolio/issues/30)). |
+| Future deployments | AWS / IONOS | **To be reviewed.** When these versions are built, we will review whether the assistant can work with Ollama, hosted and reached through `Ollama:BaseUrl`. |
 
 The API reads `Ollama:BaseUrl` and `Ollama:Model` from configuration. Because Azure is the selected provider, the assistant is expected to fail there (the default `http://localhost:11434` does not exist in the Azure containers); the rest of the portfolio is not affected. When the app is deployed to [AWS](https://aws.amazon.com/) or [IONOS](https://www.ionos.com/), we will review whether an Ollama server can be hosted and pointed to through `Ollama:BaseUrl`.
 
@@ -113,6 +113,7 @@ The API reads `Ollama:BaseUrl` and `Ollama:Model` from configuration. Because Az
 | 21. README link on the public site | [#21](https://github.com/AbelLopez73/PersonalPortfolio/issues/21) | `feature/issue-21-readme-link` |
 | 26. Remove model label from the public page | [#26](https://github.com/AbelLopez73/PersonalPortfolio/issues/26) | `feature/issue-26-remove-model-label` |
 | 28. Clarify Ollama assistant availability on the public page | [#28](https://github.com/AbelLopez73/PersonalPortfolio/issues/28) | `feature/issue-28-clarify-ollama-notice` |
+| 30. Make the portfolio assistant chat work on Azure | [#30](https://github.com/AbelLopez73/PersonalPortfolio/issues/30) | `feature/issue-30-assistant-chat-azure` |
 | Workflow: integration | N/A | `desarrollo` |
 | Workflow: validation | N/A | `pruebas` |
 | Workflow: release candidate | N/A | `produccion` |
