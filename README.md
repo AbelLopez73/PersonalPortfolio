@@ -88,7 +88,7 @@ Promotion flow: `desarrollo` Ã¢â€ â€™ `pruebas` Ã¢â€ â€™ `
 | Pruebas and Producción | Microsoft Azure | **In progress with Google Gemini.** Azure App Service cannot reach a local Ollama server and the Free plan cannot host an LLM, so the assistant will use Gemini here (issue [#30](https://github.com/AbelLopez73/PersonalPortfolio/issues/30)). |
 | Future deployments | AWS / IONOS | **To be reviewed.** When these versions are built, we will review whether the assistant can work with Ollama, hosted and reached through `Ollama:BaseUrl`. |
 
-The assistant picks its provider from configuration: when `Gemini:ApiKey` is set (Azure, set as the App Service setting `Gemini__ApiKey`; model in `Gemini:Model`, default `gemini-2.5-flash`) it uses the Google Gemini free tier; otherwise it uses Ollama through `Ollama:BaseUrl` and `Ollama:Model` (local default `http://localhost:11434`). Never commit the Gemini key. Each question is also sent to the owner on Telegram when `TelegramNotifications__BotToken` and `TelegramNotifications__OwnerChatId` are set, and the endpoint is limited to 10 requests per minute per IP. When the app is deployed to [AWS](https://aws.amazon.com/) or [IONOS](https://www.ionos.com/), we will review whether an Ollama server can be hosted and pointed to through `Ollama:BaseUrl`.
+The assistant picks its provider from configuration: when `Gemini:ApiKey` is set (Azure, set as the App Service setting `Gemini__ApiKey`; model in `Gemini:Model`, default `gemini-3.5-flash`) it uses the Google Gemini free tier; otherwise it uses Ollama through `Ollama:BaseUrl` and `Ollama:Model` (local default `http://localhost:11434`). Never commit the Gemini key. Each question is also sent to the owner on Telegram when `TelegramNotifications__BotToken` and `TelegramNotifications__OwnerChatId` are set, and the endpoint is limited to 10 requests per minute per IP. When the app is deployed to [AWS](https://aws.amazon.com/) or [IONOS](https://www.ionos.com/), we will review whether an Ollama server can be hosted and pointed to through `Ollama:BaseUrl`.
 
 ## Issue and Branch Mapping
 
@@ -120,6 +120,7 @@ The assistant picks its provider from configuration: when `Gemini:ApiKey` is set
 | 49. Add Data Science & Artificial Intelligence profile and resume | [#49](https://github.com/AbelLopez73/PersonalPortfolio/issues/49) | `feature/issue-49-data-science-ai-profile` |
 | 53. Show profile selector in a 2x2 grid | [#53](https://github.com/AbelLopez73/PersonalPortfolio/issues/53) | `feature/issue-53-profile-selector-grid` |
 | 57. Move AI assistant chat above Available for opportunities | [#57](https://github.com/AbelLopez73/PersonalPortfolio/issues/57) | `feature/issue-57-assistant-chat-position` |
+| 62. Update default Gemini model to gemini-3.5-flash | [#62](https://github.com/AbelLopez73/PersonalPortfolio/issues/62) | `feature/issue-62-gemini-default-model` |
 | Workflow: integration | N/A | `desarrollo` |
 | Workflow: validation | N/A | `pruebas` |
 | Workflow: release candidate | N/A | `produccion` |
