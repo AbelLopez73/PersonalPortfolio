@@ -94,8 +94,8 @@ body {
 }
 
 .variant-switcher {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(2, max-content);
   gap: 8px;
   margin-bottom: 22px;
 }
