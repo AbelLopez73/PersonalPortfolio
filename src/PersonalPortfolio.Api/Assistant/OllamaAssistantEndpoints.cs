@@ -26,12 +26,13 @@ public static class OllamaAssistantEndpoints
 
             try
             {
-                await notifier.NotifyAsync(messages[^1].Content, cancellationToken);
                 var reply = await assistant.ReplyAsync(messages, cancellationToken);
+                await notifier.NotifyAsync(messages[^1].Content, reply, cancellationToken);
                 return Results.Ok(new AssistantChatResponse(reply));
             }
             catch (HttpRequestException)
             {
+                await notifier.NotifyAsync(messages[^1].Content, null, cancellationToken);
                 return Results.Problem(
                     title: "The assistant is unavailable.",
                     detail: "The configured AI provider (Gemini or Ollama) could not be reached.",
