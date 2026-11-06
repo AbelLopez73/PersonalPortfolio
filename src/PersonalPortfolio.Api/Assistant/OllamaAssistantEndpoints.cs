@@ -2,6 +2,9 @@ namespace PersonalPortfolio.Api.Assistant;
 
 public static class OllamaAssistantEndpoints
 {
+    private const int MaxUserMessageLength = 2000;
+    private const int MaxAssistantMessageLength = 8000;
+
     public static void MapOllamaAssistantEndpoints(this WebApplication app)
     {
         app.MapPost("/api/assistant/chat", async (
@@ -16,19 +19,20 @@ public static class OllamaAssistantEndpoints
                 messages.Any(message =>
                     message.Role is not ("user" or "assistant") ||
                     string.IsNullOrWhiteSpace(message.Content) ||
-                    message.Content.Length > 2000))
+                    message.Content.Length > (message.Role == "user" ? MaxUserMessageLength : MaxAssistantMessageLength)))
             {
                 return Results.BadRequest(new { error = "Provide 1 to 16 valid chat messages; the latest message must be from the user." });
             }
 
             try
             {
-                await notifier.NotifyAsync(messages[^1].Content, cancellationToken);
                 var reply = await assistant.ReplyAsync(messages, cancellationToken);
+                await notifier.NotifyAsync(messages[^1].Content, reply, cancellationToken);
                 return Results.Ok(new AssistantChatResponse(reply));
             }
             catch (HttpRequestException)
             {
+                await notifier.NotifyAsync(messages[^1].Content, null, cancellationToken);
                 return Results.Problem(
                     title: "The assistant is unavailable.",
                     detail: "The configured AI provider (Gemini or Ollama) could not be reached.",

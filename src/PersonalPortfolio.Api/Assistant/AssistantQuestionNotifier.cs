@@ -6,12 +6,14 @@ namespace PersonalPortfolio.Api.Assistant;
 public sealed class AssistantQuestionNotifier(
     IHttpClientFactory httpClientFactory,
     IConfiguration configuration,
+    IHostEnvironment hostEnvironment,
     ILogger<AssistantQuestionNotifier> logger)
 {
-    private const int MaxLength = 500;
+    private const int MaxQuestionLength = 1000;
+    private const int MaxAnswerLength = 2500;
 
-    /// <summary>Best-effort Telegram alert; it never throws so chat replies are not affected.</summary>
-    public async Task NotifyAsync(string question, CancellationToken cancellationToken)
+    /// <summary>Best-effort Telegram copy of a question and its answer; it never throws so chat replies are not affected.</summary>
+    public async Task NotifyAsync(string question, string? answer, CancellationToken cancellationToken)
     {
         var token = configuration["TelegramNotifications:BotToken"];
         var chatId = configuration["TelegramNotifications:OwnerChatId"];
@@ -20,14 +22,17 @@ public sealed class AssistantQuestionNotifier(
             return;
         }
 
-        var text = question.Length > MaxLength ? question[..MaxLength] : question;
+        var environmentLabel = configuration["TelegramNotifications:EnvironmentLabel"]
+            ?? hostEnvironment.EnvironmentName;
+        var answerText = answer is null ? "(assistant unavailable)" : Truncate(answer, MaxAnswerLength);
+        var text = $"[{environmentLabel}]\nQuestion:\n{Truncate(question, MaxQuestionLength)}\n\nAnswer:\n{answerText}";
         try
         {
             using var response = await httpClientFactory
                 .CreateClient("TelegramBot")
                 .PostAsJsonAsync(
                     $"https://api.telegram.org/bot{Uri.EscapeDataString(token)}/sendMessage",
-                    new TelegramMessage(chatId, $"New assistant question:\n\n{text}"),
+                    new TelegramMessage(chatId, text),
                     cancellationToken);
 
             if (!response.IsSuccessStatusCode)
@@ -41,6 +46,9 @@ public sealed class AssistantQuestionNotifier(
             logger.LogWarning("Telegram assistant question alert could not be delivered.");
         }
     }
+
+    private static string Truncate(string value, int maxLength) =>
+        value.Length > maxLength ? value[..maxLength] : value;
 
     private sealed record TelegramMessage(
         [property: JsonPropertyName("chat_id")] string ChatId,

@@ -210,6 +210,16 @@
 | 49. Add Data Science & Artificial Intelligence profile and resume | [#49](https://github.com/AbelLopez73/PersonalPortfolio/issues/49) | `feature/issue-49-data-science-ai-profile` |
 | 53. Show profile selector in a 2x2 grid | [#53](https://github.com/AbelLopez73/PersonalPortfolio/issues/53) | `feature/issue-53-profile-selector-grid` |
 | 57. Move AI assistant chat above Available for opportunities | [#57](https://github.com/AbelLopez73/PersonalPortfolio/issues/57) | `feature/issue-57-assistant-chat-position` |
+| 62. Update default Gemini model to gemini-3.5-flash | [#62](https://github.com/AbelLopez73/PersonalPortfolio/issues/62) | `feature/issue-62-gemini-default-model` |
+| 66. Enable .NET user secrets for local Gemini key | [#66](https://github.com/AbelLopez73/PersonalPortfolio/issues/66) | `feature/issue-66-api-user-secrets` |
+| 70. Replace Coming soon notice with Gemini notice and generic error | [#70](https://github.com/AbelLopez73/PersonalPortfolio/issues/70) | `feature/issue-70-assistant-live-notice` |
+| 74. Fix assistant 400 on follow-up questions with long replies | [#74](https://github.com/AbelLopez73/PersonalPortfolio/issues/74) | `feature/issue-74-assistant-long-replies` |
+| 78. Use gemini-3.1-flash-lite as default model (free tier quota) | [#78](https://github.com/AbelLopez73/PersonalPortfolio/issues/78) | `feature/issue-78-gemini-flash-lite` |
+| 82. Save a copy of every assistant question and answer | [#82](https://github.com/AbelLopez73/PersonalPortfolio/issues/82) | `feature/issue-82-assistant-chat-log` |
+| 86. Configure Telegram bot for assistant alerts | [#86](https://github.com/AbelLopez73/PersonalPortfolio/issues/86) | `feature/issue-86-telegram-bot-setup` |
+| 87. Assistant: let visitors request to contact Abel | [#87](https://github.com/AbelLopez73/PersonalPortfolio/issues/87) | `feature/issue-87-assistant-contact-request` |
+| 88. Assistant: group interview request with owner approval | [#88](https://github.com/AbelLopez73/PersonalPortfolio/issues/88) | `feature/issue-88-assistant-group-interview` |
+| 89. Open to suggestions: collect visitor suggestions and proposals | [#89](https://github.com/AbelLopez73/PersonalPortfolio/issues/89) | `feature/issue-89-visitor-suggestions` |
 | Workflow: integration | N/A | `desarrollo` |
 | Workflow: validation | N/A | `pruebas` |
 | Workflow: release candidate | N/A | `produccion` |
