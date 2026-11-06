@@ -211,6 +211,7 @@
 | 53. Show profile selector in a 2x2 grid | [#53](https://github.com/AbelLopez73/PersonalPortfolio/issues/53) | `feature/issue-53-profile-selector-grid` |
 | 57. Move AI assistant chat above Available for opportunities | [#57](https://github.com/AbelLopez73/PersonalPortfolio/issues/57) | `feature/issue-57-assistant-chat-position` |
 | 62. Update default Gemini model to gemini-3.5-flash | [#62](https://github.com/AbelLopez73/PersonalPortfolio/issues/62) | `feature/issue-62-gemini-default-model` |
+| 66. Enable .NET user secrets for local Gemini key | [#66](https://github.com/AbelLopez73/PersonalPortfolio/issues/66) | `feature/issue-66-api-user-secrets` |
 | Workflow: integration | N/A | `desarrollo` |
 | Workflow: validation | N/A | `pruebas` |
 | Workflow: release candidate | N/A | `produccion` |
