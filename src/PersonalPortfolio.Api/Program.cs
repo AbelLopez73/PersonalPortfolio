@@ -9,6 +9,8 @@ using PersonalPortfolio.Api.Notifications;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Logging.AddFilter("System.Net.Http.HttpClient.TelegramBot", LogLevel.None);
+
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
