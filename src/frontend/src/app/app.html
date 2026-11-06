@@ -109,17 +109,19 @@
     <p class="contact-copy">
       I’m open to product engineering, operations, logistics and technical collaboration opportunities.
     </p>
-    <div class="resume-row">
-      <a class="primary" [href]="resumeUrl()" target="_blank" rel="noopener noreferrer">Download {{ resumeLabel() }}</a>
-    </div>
+    <ul class="resume-row" style="list-style: disc; padding-left: 1.25rem; display: grid; gap: 0.75rem;">
+      <li><a class="primary" [href]="resumeUrl()" download="Abel-Lopez-Resume.pdf">Download {{ resumeLabel() }}</a></li>
+      <li><a class="secondary" [href]="resumeUrl()" target="_blank" rel="noopener noreferrer">View {{ resumeLabel() }}</a></li>
+      <li><a class="secondary" href="https://github.com/AbelLopez73/PersonalPortfolio/blob/main/README.md" target="_blank" rel="noopener noreferrer">View project README on GitHub</a></li>
+    </ul>
   </section>
 
   <section class="section assistant-section" id="assistant">
     <div class="assistant-copy">
-      <p class="eyebrow">Ollama assistant</p>
+      <p class="eyebrow">AI assistant</p>
       <h2>Ask about my work</h2>
       <p class="contact-copy">Get answers about my experience, skills, and projects.</p>
-      <span class="assistant-model">deepseek-r1:8b · local</span>
+      <p class="assistant-notice"><strong>Coming soon.</strong> This assistant will run on Google Gemini while the site is hosted on Azure. Ollama will be reviewed when the IONOS and AWS versions of this site are built.</p>
     </div>
 
     <div class="assistant-chat">
