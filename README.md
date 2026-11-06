@@ -99,6 +99,7 @@ For local development, set them in .NET User Secrets from the repository root:
 ```bash
 dotnet user-secrets set "TelegramNotifications:BotToken" "<bot-token>" --project src/PersonalPortfolio.Api
 dotnet user-secrets set "TelegramNotifications:OwnerChatId" "<owner-chat-id>" --project src/PersonalPortfolio.Api
+dotnet user-secrets set "TelegramNotifications:EnvironmentLabel" "Local" --project src/PersonalPortfolio.Api
 ```
 
 In Azure, add the following application settings to the API App Service for both Pruebas (`abellopezmesa-api-test`) and Produccion (`abellopezmesa-api`):
@@ -107,8 +108,11 @@ In Azure, add the following application settings to the API App Service for both
 |---|---|
 | `TelegramNotifications__BotToken` | BotFather token |
 | `TelegramNotifications__OwnerChatId` | Owner's private Telegram chat ID |
+| `TelegramNotifications__EnvironmentLabel` | `Pruebas` on the test app; `Producción` on the production app |
 
-Set these values through the App Service configuration in the Azure portal; do not put them in deployment workflow files, GitHub Actions variables, Docker Compose, or source control. Save the settings and restart the API app if Azure does not restart it automatically. To verify the setup, send a test question through the public assistant and confirm that the owner receives the question and response in Telegram.
+Each Telegram copy starts with its environment label, so local tests, Pruebas, and Producción are easy to tell apart even when they use the same private owner chat. Without an explicit label, the API uses its ASP.NET environment name. These notifications are sent to the configured owner's private chat ID, not to a visitor-facing Telegram conversation.
+
+Set these values through the App Service configuration in the Azure portal; do not put them in deployment workflow files, GitHub Actions variables, Docker Compose, or source control. Save the settings and restart the API app if Azure does not restart it automatically. To verify the setup, send a test question through the public assistant and confirm that the owner receives the question and response in Telegram with the correct environment label.
 
 ## Issue and Branch Mapping
 
