@@ -126,6 +126,10 @@ The assistant picks its provider from configuration: when `Gemini:ApiKey` is set
 | 74. Fix assistant 400 on follow-up questions with long replies | [#74](https://github.com/AbelLopez73/PersonalPortfolio/issues/74) | `feature/issue-74-assistant-long-replies` |
 | 78. Use gemini-3.1-flash-lite as default model (free tier quota) | [#78](https://github.com/AbelLopez73/PersonalPortfolio/issues/78) | `feature/issue-78-gemini-flash-lite` |
 | 82. Save a copy of every assistant question and answer | [#82](https://github.com/AbelLopez73/PersonalPortfolio/issues/82) | `feature/issue-82-assistant-chat-log` |
+| 86. Configure Telegram bot for assistant alerts | [#86](https://github.com/AbelLopez73/PersonalPortfolio/issues/86) | `feature/issue-86-telegram-bot-setup` |
+| 87. Assistant: let visitors request to contact Abel | [#87](https://github.com/AbelLopez73/PersonalPortfolio/issues/87) | `feature/issue-87-assistant-contact-request` |
+| 88. Assistant: group interview request with owner approval | [#88](https://github.com/AbelLopez73/PersonalPortfolio/issues/88) | `feature/issue-88-assistant-group-interview` |
+| 89. Open to suggestions: collect visitor suggestions and proposals | [#89](https://github.com/AbelLopez73/PersonalPortfolio/issues/89) | `feature/issue-89-visitor-suggestions` |
 | Workflow: integration | N/A | `desarrollo` |
 | Workflow: validation | N/A | `pruebas` |
 | Workflow: release candidate | N/A | `produccion` |
