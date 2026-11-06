@@ -123,6 +123,7 @@ The assistant picks its provider from configuration: when `Gemini:ApiKey` is set
 | 62. Update default Gemini model to gemini-3.5-flash | [#62](https://github.com/AbelLopez73/PersonalPortfolio/issues/62) | `feature/issue-62-gemini-default-model` |
 | 66. Enable .NET user secrets for local Gemini key | [#66](https://github.com/AbelLopez73/PersonalPortfolio/issues/66) | `feature/issue-66-api-user-secrets` |
 | 70. Replace Coming soon notice with Gemini notice and generic error | [#70](https://github.com/AbelLopez73/PersonalPortfolio/issues/70) | `feature/issue-70-assistant-live-notice` |
+| 74. Fix assistant 400 on follow-up questions with long replies | [#74](https://github.com/AbelLopez73/PersonalPortfolio/issues/74) | `feature/issue-74-assistant-long-replies` |
 | Workflow: integration | N/A | `desarrollo` |
 | Workflow: validation | N/A | `pruebas` |
 | Workflow: release candidate | N/A | `produccion` |
