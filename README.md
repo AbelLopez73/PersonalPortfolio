@@ -90,6 +90,26 @@ Promotion flow: `desarrollo` Ã¢â€ â€™ `pruebas` Ã¢â€ â€™ `
 
 The assistant picks its provider from configuration: when `Gemini:ApiKey` is set (Azure, set as the App Service setting `Gemini__ApiKey`; model in `Gemini:Model`, default `gemini-3.1-flash-lite`) it uses the Google Gemini free tier; otherwise it uses Ollama through `Ollama:BaseUrl` and `Ollama:Model` (local default `http://localhost:11434`). Never commit the Gemini key; for local development store it with `dotnet user-secrets set "Gemini:ApiKey" <key>` in `src/PersonalPortfolio.Api`. Each question and its answer is also sent to the owner on Telegram as a copy of the conversation when `TelegramNotifications__BotToken` and `TelegramNotifications__OwnerChatId` are set, and the endpoint is limited to 10 requests per minute per IP. When the app is deployed to [AWS](https://aws.amazon.com/) or [IONOS](https://www.ionos.com/), we will review whether an Ollama server can be hosted and pointed to through `Ollama:BaseUrl`.
 
+### Configure Telegram assistant alerts
+
+The assistant alert uses a Telegram bot token and the owner's private chat ID. Both settings are optional, are read only by the API, and must never be added to Angular configuration or committed to the repository.
+
+For local development, set them in .NET User Secrets from the repository root:
+
+```bash
+dotnet user-secrets set "TelegramNotifications:BotToken" "<bot-token>" --project src/PersonalPortfolio.Api
+dotnet user-secrets set "TelegramNotifications:OwnerChatId" "<owner-chat-id>" --project src/PersonalPortfolio.Api
+```
+
+In Azure, add the following application settings to the API App Service for both Pruebas (`abellopezmesa-api-test`) and Produccion (`abellopezmesa-api`):
+
+| App setting name | Value |
+|---|---|
+| `TelegramNotifications__BotToken` | BotFather token |
+| `TelegramNotifications__OwnerChatId` | Owner's private Telegram chat ID |
+
+Set these values through the App Service configuration in the Azure portal; do not put them in deployment workflow files, GitHub Actions variables, Docker Compose, or source control. Save the settings and restart the API app if Azure does not restart it automatically. To verify the setup, send a test question through the public assistant and confirm that the owner receives the question and response in Telegram.
+
 ## Issue and Branch Mapping
 
 | Issue or branch role | GitHub issue | Branch |
