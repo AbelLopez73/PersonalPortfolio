@@ -20,7 +20,7 @@ public sealed class GeminiAssistantServiceTests
 
         Assert.Equal("Hello!", reply);
         Assert.Equal("test-key", handler.ApiKey);
-        Assert.Contains("gemini-3.5-flash:generateContent", handler.RequestUri);
+        Assert.Contains("gemini-3.1-flash-lite:generateContent", handler.RequestUri);
         Assert.Contains("\"role\":\"model\"", handler.Body);
         Assert.Contains("systemInstruction", handler.Body);
     }

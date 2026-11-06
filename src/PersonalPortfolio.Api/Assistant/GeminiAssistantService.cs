@@ -5,7 +5,7 @@ namespace PersonalPortfolio.Api.Assistant;
 
 public sealed class GeminiAssistantService(HttpClient httpClient, IConfiguration configuration) : IAssistantService
 {
-    private readonly string _model = configuration["Gemini:Model"] ?? "gemini-3.5-flash";
+    private readonly string _model = configuration["Gemini:Model"] ?? "gemini-3.1-flash-lite";
 
     public async Task<string> ReplyAsync(
         IReadOnlyList<AssistantChatMessage> conversation,
