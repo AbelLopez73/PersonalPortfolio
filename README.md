@@ -117,6 +117,7 @@ The assistant picks its provider from configuration: when `Gemini:ApiKey` is set
 | 40. Resume download should download the PDF | [#40](https://github.com/AbelLopez73/PersonalPortfolio/issues/40) | `feature/issue-40-resume-pdf-download` |
 | 42. Show the resume in the browser in addition to downloading it | [#42](https://github.com/AbelLopez73/PersonalPortfolio/issues/42) | `feature/issue-42-view-resume` |
 | 44. Change Developer to Software Engineer in the resume | [#44](https://github.com/AbelLopez73/PersonalPortfolio/issues/44) | `feature/issue-44-resume-title` |
+| 49. Add Data Science & Artificial Intelligence profile and resume | [#49](https://github.com/AbelLopez73/PersonalPortfolio/issues/49) | `feature/issue-49-data-science-ai-profile` |
 | Workflow: integration | N/A | `desarrollo` |
 | Workflow: validation | N/A | `pruebas` |
 | Workflow: release candidate | N/A | `produccion` |
