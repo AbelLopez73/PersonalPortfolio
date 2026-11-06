@@ -90,6 +90,30 @@ Promotion flow: `desarrollo` Ã¢â€ â€™ `pruebas` Ã¢â€ â€™ `
 
 The assistant picks its provider from configuration: when `Gemini:ApiKey` is set (Azure, set as the App Service setting `Gemini__ApiKey`; model in `Gemini:Model`, default `gemini-3.1-flash-lite`) it uses the Google Gemini free tier; otherwise it uses Ollama through `Ollama:BaseUrl` and `Ollama:Model` (local default `http://localhost:11434`). Never commit the Gemini key; for local development store it with `dotnet user-secrets set "Gemini:ApiKey" <key>` in `src/PersonalPortfolio.Api`. Each question and its answer is also sent to the owner on Telegram as a copy of the conversation when `TelegramNotifications__BotToken` and `TelegramNotifications__OwnerChatId` are set, and the endpoint is limited to 10 requests per minute per IP. When the app is deployed to [AWS](https://aws.amazon.com/) or [IONOS](https://www.ionos.com/), we will review whether an Ollama server can be hosted and pointed to through `Ollama:BaseUrl`.
 
+### Configure Telegram assistant alerts
+
+The assistant alert uses a Telegram bot token and the owner's private chat ID. Both settings are optional, are read only by the API, and must never be added to Angular configuration or committed to the repository.
+
+For local development, set them in .NET User Secrets from the repository root:
+
+```bash
+dotnet user-secrets set "TelegramNotifications:BotToken" "<bot-token>" --project src/PersonalPortfolio.Api
+dotnet user-secrets set "TelegramNotifications:OwnerChatId" "<owner-chat-id>" --project src/PersonalPortfolio.Api
+dotnet user-secrets set "TelegramNotifications:EnvironmentLabel" "Local" --project src/PersonalPortfolio.Api
+```
+
+In Azure, add the following application settings to the API App Service for both Pruebas (`abellopezmesa-api-test`) and Produccion (`abellopezmesa-api`):
+
+| App setting name | Value |
+|---|---|
+| `TelegramNotifications__BotToken` | BotFather token |
+| `TelegramNotifications__OwnerChatId` | Owner's private Telegram chat ID |
+| `TelegramNotifications__EnvironmentLabel` | `Pruebas` on the test app; `Producción` on the production app |
+
+Each Telegram copy starts with its environment label, so local tests, Pruebas, and Producción are easy to tell apart even when they use the same private owner chat. Without an explicit label, the API uses its ASP.NET environment name. These notifications are sent to the configured owner's private chat ID, not to a visitor-facing Telegram conversation.
+
+Set these values through the App Service configuration in the Azure portal; do not put them in deployment workflow files, GitHub Actions variables, Docker Compose, or source control. Save the settings and restart the API app if Azure does not restart it automatically. To verify the setup, send a test question through the public assistant and confirm that the owner receives the question and response in Telegram with the correct environment label.
+
 ## Issue and Branch Mapping
 
 | Issue or branch role | GitHub issue | Branch |
@@ -126,6 +150,10 @@ The assistant picks its provider from configuration: when `Gemini:ApiKey` is set
 | 74. Fix assistant 400 on follow-up questions with long replies | [#74](https://github.com/AbelLopez73/PersonalPortfolio/issues/74) | `feature/issue-74-assistant-long-replies` |
 | 78. Use gemini-3.1-flash-lite as default model (free tier quota) | [#78](https://github.com/AbelLopez73/PersonalPortfolio/issues/78) | `feature/issue-78-gemini-flash-lite` |
 | 82. Save a copy of every assistant question and answer | [#82](https://github.com/AbelLopez73/PersonalPortfolio/issues/82) | `feature/issue-82-assistant-chat-log` |
+| 86. Configure Telegram bot for assistant alerts | [#86](https://github.com/AbelLopez73/PersonalPortfolio/issues/86) | `feature/issue-86-telegram-bot-setup` |
+| 87. Assistant: let visitors request to contact Abel | [#87](https://github.com/AbelLopez73/PersonalPortfolio/issues/87) | `feature/issue-87-assistant-contact-request` |
+| 88. Assistant: group interview request with owner approval | [#88](https://github.com/AbelLopez73/PersonalPortfolio/issues/88) | `feature/issue-88-assistant-group-interview` |
+| 89. Open to suggestions: collect visitor suggestions and proposals | [#89](https://github.com/AbelLopez73/PersonalPortfolio/issues/89) | `feature/issue-89-visitor-suggestions` |
 | Workflow: integration | N/A | `desarrollo` |
 | Workflow: validation | N/A | `pruebas` |
 | Workflow: release candidate | N/A | `produccion` |

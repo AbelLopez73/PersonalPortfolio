@@ -6,6 +6,7 @@ namespace PersonalPortfolio.Api.Assistant;
 public sealed class AssistantQuestionNotifier(
     IHttpClientFactory httpClientFactory,
     IConfiguration configuration,
+    IHostEnvironment hostEnvironment,
     ILogger<AssistantQuestionNotifier> logger)
 {
     private const int MaxQuestionLength = 1000;
@@ -21,8 +22,10 @@ public sealed class AssistantQuestionNotifier(
             return;
         }
 
+        var environmentLabel = configuration["TelegramNotifications:EnvironmentLabel"]
+            ?? hostEnvironment.EnvironmentName;
         var answerText = answer is null ? "(assistant unavailable)" : Truncate(answer, MaxAnswerLength);
-        var text = $"Question:\n{Truncate(question, MaxQuestionLength)}\n\nAnswer:\n{answerText}";
+        var text = $"[{environmentLabel}]\nQuestion:\n{Truncate(question, MaxQuestionLength)}\n\nAnswer:\n{answerText}";
         try
         {
             using var response = await httpClientFactory
