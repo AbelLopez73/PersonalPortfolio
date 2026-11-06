@@ -48,6 +48,52 @@ export class App implements OnInit {
 
   protected readonly variants: ProfileVariant[] = [
     {
+      id: 'data-science-ai',
+      label: 'Data Science & AI',
+      title: 'Data Science & Artificial Intelligence',
+      summary:
+        'I combine a software engineering background with data science and AI training to turn data into reliable, production-ready solutions.',
+      focusAreas: [
+        'Python, NumPy, Pandas and exploratory data analysis',
+        'Machine learning and deep learning',
+        'SQL and relational databases',
+        'Data visualization with Power BI and Tableau',
+        'NLP, generative AI and MLOps fundamentals',
+        'Software engineering: C#, Angular, APIs',
+      ],
+      highlights: [
+        { label: 'Training', value: 'Sky States DS & AI' },
+        { label: 'Core tools', value: 'Python + SQL' },
+        { label: 'Foundation', value: 'Software engineering' },
+      ],
+      experience: [
+        {
+          title: 'Data Science & AI training',
+          period: 'Sky States LLC',
+          description: 'Program covering Python, statistics, machine learning, deep learning, NLP with MLOps, data visualization and domain capstone projects.',
+        },
+        {
+          title: 'Software Engineer / Full Stack Developer',
+          period: '2021 — Present',
+          description: 'Building APIs, internal tools and data-driven workflows that provide the engineering base for analytics and AI solutions.',
+        },
+      ],
+      projects: [
+        {
+          name: 'Portfolio assistant',
+          stack: ['ASP.NET Core', 'Gemini', 'Ollama'],
+          summary: 'Public AI assistant that answers questions about the portfolio, using a hosted model on Azure and a local model during development.',
+        },
+        {
+          name: 'Cash Harmony',
+          stack: ['Angular', '.NET', 'SQL'],
+          summary: 'Operational platform with reporting and workflow visibility, a base for data analysis and dashboards.',
+        },
+      ],
+      resumeLabel: 'Data Science & AI Resume',
+      resumeUrl: '_ResumeLast/PDFs/Abel%20Lopez.resume-DS.pdf',
+    },
+    {
       id: 'software-engineer',
       label: 'Software Engineer',
       title: 'Software Engineer',
@@ -170,7 +216,7 @@ export class App implements OnInit {
     },
   ];
 
-  protected readonly selectedVariantId = signal('software-engineer');
+  protected readonly selectedVariantId = signal('data-science-ai');
 
   protected readonly currentVariant = signal(this.variants[0]);
 

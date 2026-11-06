@@ -117,6 +117,9 @@ The assistant picks its provider from configuration: when `Gemini:ApiKey` is set
 | 40. Resume download should download the PDF | [#40](https://github.com/AbelLopez73/PersonalPortfolio/issues/40) | `feature/issue-40-resume-pdf-download` |
 | 42. Show the resume in the browser in addition to downloading it | [#42](https://github.com/AbelLopez73/PersonalPortfolio/issues/42) | `feature/issue-42-view-resume` |
 | 44. Change Developer to Software Engineer in the resume | [#44](https://github.com/AbelLopez73/PersonalPortfolio/issues/44) | `feature/issue-44-resume-title` |
+| 49. Add Data Science & Artificial Intelligence profile and resume | [#49](https://github.com/AbelLopez73/PersonalPortfolio/issues/49) | `feature/issue-49-data-science-ai-profile` |
+| 53. Show profile selector in a 2x2 grid | [#53](https://github.com/AbelLopez73/PersonalPortfolio/issues/53) | `feature/issue-53-profile-selector-grid` |
+| 57. Move AI assistant chat above Available for opportunities | [#57](https://github.com/AbelLopez73/PersonalPortfolio/issues/57) | `feature/issue-57-assistant-chat-position` |
 | Workflow: integration | N/A | `desarrollo` |
 | Workflow: validation | N/A | `pruebas` |
 | Workflow: release candidate | N/A | `produccion` |

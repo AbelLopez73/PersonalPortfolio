@@ -49,6 +49,46 @@
     </div>
 
     <aside class="profile-card" aria-label="Summary card">
+  <section class="section assistant-section" id="assistant">
+    <div class="assistant-chat">
+      <div class="assistant-messages" aria-live="polite" aria-label="Conversation">
+        @if (chatMessages().length === 0) {
+          <p class="assistant-welcome">Ask me about Abel's experience, technical skills, or projects.</p>
+        }
+        @for (message of chatMessages(); track $index) {
+          <p class="assistant-message" [class.user-message]="message.role === 'user'">
+            {{ message.content }}
+          </p>
+        }
+        @if (chatPending()) {
+          <p class="assistant-pending" role="status">Thinking...</p>
+        }
+      </div>
+
+      <form class="assistant-form" (submit)="sendChatMessage($event)">
+        <textarea
+          id="assistant-prompt"
+          aria-label="Your message"
+          rows="2"
+          maxlength="2000"
+          placeholder="Ask a question..."
+          [value]="chatDraft()"
+          [disabled]="chatPending()"
+          (input)="updateChatDraft($event)"
+        ></textarea>
+        <button type="submit" [disabled]="chatPending() || !chatDraft().trim()">Send</button>
+      </form>
+      @if (chatError()) {
+        <p class="assistant-error" role="alert">The assistant is unavailable. Check that Ollama is running.</p>
+      }
+    </div>
+    <div class="assistant-copy">
+      <p class="eyebrow">AI assistant</p>
+      <h2>Ask about my work</h2>
+      <p class="contact-copy">Get answers about my experience, skills, and projects.</p>
+      <p class="assistant-notice"><strong>Coming soon.</strong> This assistant will run on Google Gemini while the site is hosted on Azure. Ollama will be reviewed when the IONOS and AWS versions of this site are built.</p>
+    </div>
+  </section>
       <div class="badge">Available for opportunities</div>
       <h2>{{ variantTitle() }} focus</h2>
       <ul>
@@ -114,47 +154,5 @@
       <li><a class="secondary" [href]="resumeUrl()" target="_blank" rel="noopener noreferrer">View {{ resumeLabel() }}</a></li>
       <li><a class="secondary" href="https://github.com/AbelLopez73/PersonalPortfolio/blob/main/README.md" target="_blank" rel="noopener noreferrer">View project README on GitHub</a></li>
     </ul>
-  </section>
-
-  <section class="section assistant-section" id="assistant">
-    <div class="assistant-copy">
-      <p class="eyebrow">AI assistant</p>
-      <h2>Ask about my work</h2>
-      <p class="contact-copy">Get answers about my experience, skills, and projects.</p>
-      <p class="assistant-notice"><strong>Coming soon.</strong> This assistant will run on Google Gemini while the site is hosted on Azure. Ollama will be reviewed when the IONOS and AWS versions of this site are built.</p>
-    </div>
-
-    <div class="assistant-chat">
-      <div class="assistant-messages" aria-live="polite" aria-label="Conversation">
-        @if (chatMessages().length === 0) {
-          <p class="assistant-welcome">Ask me about Abel's experience, technical skills, or projects.</p>
-        }
-        @for (message of chatMessages(); track $index) {
-          <p class="assistant-message" [class.user-message]="message.role === 'user'">
-            {{ message.content }}
-          </p>
-        }
-        @if (chatPending()) {
-          <p class="assistant-pending" role="status">Thinking...</p>
-        }
-      </div>
-
-      <form class="assistant-form" (submit)="sendChatMessage($event)">
-        <textarea
-          id="assistant-prompt"
-          aria-label="Your message"
-          rows="2"
-          maxlength="2000"
-          placeholder="Ask a question..."
-          [value]="chatDraft()"
-          [disabled]="chatPending()"
-          (input)="updateChatDraft($event)"
-        ></textarea>
-        <button type="submit" [disabled]="chatPending() || !chatDraft().trim()">Send</button>
-      </form>
-      @if (chatError()) {
-        <p class="assistant-error" role="alert">The assistant is unavailable. Check that Ollama is running.</p>
-      }
-    </div>
   </section>
 </main>
