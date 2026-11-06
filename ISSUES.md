@@ -215,6 +215,7 @@
 | 70. Replace Coming soon notice with Gemini notice and generic error | [#70](https://github.com/AbelLopez73/PersonalPortfolio/issues/70) | `feature/issue-70-assistant-live-notice` |
 | 74. Fix assistant 400 on follow-up questions with long replies | [#74](https://github.com/AbelLopez73/PersonalPortfolio/issues/74) | `feature/issue-74-assistant-long-replies` |
 | 78. Use gemini-3.1-flash-lite as default model (free tier quota) | [#78](https://github.com/AbelLopez73/PersonalPortfolio/issues/78) | `feature/issue-78-gemini-flash-lite` |
+| 82. Save a copy of every assistant question and answer | [#82](https://github.com/AbelLopez73/PersonalPortfolio/issues/82) | `feature/issue-82-assistant-chat-log` |
 | Workflow: integration | N/A | `desarrollo` |
 | Workflow: validation | N/A | `pruebas` |
 | Workflow: release candidate | N/A | `produccion` |

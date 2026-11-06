@@ -88,7 +88,7 @@ Promotion flow: `desarrollo` Ã¢â€ â€™ `pruebas` Ã¢â€ â€™ `
 | Pruebas and Producción | Microsoft Azure | **In progress with Google Gemini.** Azure App Service cannot reach a local Ollama server and the Free plan cannot host an LLM, so the assistant will use Gemini here (issue [#30](https://github.com/AbelLopez73/PersonalPortfolio/issues/30)). |
 | Future deployments | AWS / IONOS | **To be reviewed.** When these versions are built, we will review whether the assistant can work with Ollama, hosted and reached through `Ollama:BaseUrl`. |
 
-The assistant picks its provider from configuration: when `Gemini:ApiKey` is set (Azure, set as the App Service setting `Gemini__ApiKey`; model in `Gemini:Model`, default `gemini-3.1-flash-lite`) it uses the Google Gemini free tier; otherwise it uses Ollama through `Ollama:BaseUrl` and `Ollama:Model` (local default `http://localhost:11434`). Never commit the Gemini key; for local development store it with `dotnet user-secrets set "Gemini:ApiKey" <key>` in `src/PersonalPortfolio.Api`. Each question is also sent to the owner on Telegram when `TelegramNotifications__BotToken` and `TelegramNotifications__OwnerChatId` are set, and the endpoint is limited to 10 requests per minute per IP. When the app is deployed to [AWS](https://aws.amazon.com/) or [IONOS](https://www.ionos.com/), we will review whether an Ollama server can be hosted and pointed to through `Ollama:BaseUrl`.
+The assistant picks its provider from configuration: when `Gemini:ApiKey` is set (Azure, set as the App Service setting `Gemini__ApiKey`; model in `Gemini:Model`, default `gemini-3.1-flash-lite`) it uses the Google Gemini free tier; otherwise it uses Ollama through `Ollama:BaseUrl` and `Ollama:Model` (local default `http://localhost:11434`). Never commit the Gemini key; for local development store it with `dotnet user-secrets set "Gemini:ApiKey" <key>` in `src/PersonalPortfolio.Api`. Each question and its answer is also sent to the owner on Telegram as a copy of the conversation when `TelegramNotifications__BotToken` and `TelegramNotifications__OwnerChatId` are set, and the endpoint is limited to 10 requests per minute per IP. When the app is deployed to [AWS](https://aws.amazon.com/) or [IONOS](https://www.ionos.com/), we will review whether an Ollama server can be hosted and pointed to through `Ollama:BaseUrl`.
 
 ## Issue and Branch Mapping
 
@@ -125,6 +125,7 @@ The assistant picks its provider from configuration: when `Gemini:ApiKey` is set
 | 70. Replace Coming soon notice with Gemini notice and generic error | [#70](https://github.com/AbelLopez73/PersonalPortfolio/issues/70) | `feature/issue-70-assistant-live-notice` |
 | 74. Fix assistant 400 on follow-up questions with long replies | [#74](https://github.com/AbelLopez73/PersonalPortfolio/issues/74) | `feature/issue-74-assistant-long-replies` |
 | 78. Use gemini-3.1-flash-lite as default model (free tier quota) | [#78](https://github.com/AbelLopez73/PersonalPortfolio/issues/78) | `feature/issue-78-gemini-flash-lite` |
+| 82. Save a copy of every assistant question and answer | [#82](https://github.com/AbelLopez73/PersonalPortfolio/issues/82) | `feature/issue-82-assistant-chat-log` |
 | Workflow: integration | N/A | `desarrollo` |
 | Workflow: validation | N/A | `pruebas` |
 | Workflow: release candidate | N/A | `produccion` |
