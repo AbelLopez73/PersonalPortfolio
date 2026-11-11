@@ -120,6 +120,14 @@ Visitors can ask the assistant to connect them with Abel on the website. The ass
 
 The initial queue is held in API memory only. A restart, deployment, or process recycle clears waiting and active chats; the page tells both visitor and owner about this limitation. Do not rely on this in-memory queue for durable message storage. Persistent storage requires a separately reviewed change.
 
+### Direct phone and email options (#98)
+
+The portfolio will offer visitors direct phone and email actions alongside the assistant/contact flow. The actions should use `tel:` and `mailto:` links; the actual contact values are intentionally omitted from repository documentation.
+
+### Visitor names in Telegram headers (#99)
+
+Telegram transcript headers will include the visitor's name when it is known, while retaining the speaker label, environment label, and conversation/chat IDs. Notifications without a collected name will remain clearly identified without inventing one.
+
 ## Issue and Branch Mapping
 
 | Issue or branch role | GitHub issue | Branch |
@@ -162,6 +170,8 @@ The initial queue is held in API memory only. A restart, deployment, or process 
 | 89. Open to suggestions: collect visitor suggestions and proposals | [#89](https://github.com/AbelLopez73/PersonalPortfolio/issues/89) | `feature/issue-89-visitor-suggestions` |
 | 94. Website human chat and waiting queue | [#94](https://github.com/AbelLopez73/PersonalPortfolio/issues/94) | `feature/issue-94-website-human-chat-queue` |
 | 95. Copy complete visitor conversations to Telegram | [#95](https://github.com/AbelLopez73/PersonalPortfolio/issues/95) | `feature/issue-95-telegram-complete-transcript` |
+| 98. Offer phone and email contact options to visitors | [#98](https://github.com/AbelLopez73/PersonalPortfolio/issues/98) | `feature/issue-98-public-contact-options` |
+| 99. Include the visitor name in Telegram conversation headers | [#99](https://github.com/AbelLopez73/PersonalPortfolio/issues/99) | `feature/issue-99-telegram-speaker-names` |
 | Workflow: integration | N/A | `desarrollo` |
 | Workflow: validation | N/A | `pruebas` |
 | Workflow: release candidate | N/A | `produccion` |
