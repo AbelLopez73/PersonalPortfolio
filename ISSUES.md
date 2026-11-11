@@ -172,8 +172,9 @@
 - Priority: Medium
 - Phase: Public Site
 - Status: Backlog
-- Description: Offer direct call and email actions alongside the website assistant/contact flow.
+- Description: Have the assistant suggest a phone call or email when a visitor asks how to reach Abel, with direct actions alongside the existing contact flow.
 - Acceptance criteria:
+  - The assistant can clearly suggest calling or emailing when a visitor asks how to reach Abel.
   - Visitors can choose accessible phone-call or email actions.
   - Actions use `tel:` and `mailto:` links with contact values supplied during implementation.
   - Personal contact values are not copied into public issue text or repository documentation.

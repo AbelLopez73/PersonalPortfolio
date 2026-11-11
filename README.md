@@ -122,7 +122,7 @@ The initial queue is held in API memory only. A restart, deployment, or process 
 
 ### Direct phone and email options (#98)
 
-The portfolio will offer visitors direct phone and email actions alongside the assistant/contact flow. The actions should use `tel:` and `mailto:` links; the actual contact values are intentionally omitted from repository documentation.
+When a visitor asks how to reach Abel directly, the assistant should suggest calling or emailing and present clear phone and email actions. These actions should use `tel:` and `mailto:` links; the actual contact values are intentionally omitted from repository documentation.
 
 ### Visitor names in Telegram headers (#99)
 
