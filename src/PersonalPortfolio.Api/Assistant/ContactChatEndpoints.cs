@@ -38,10 +38,12 @@ public static class ContactChatEndpoints
             .Produces<ContactChatSession>(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status404NotFound);
 
-        app.MapPost("/api/contact-chat/messages", (
+        app.MapPost("/api/contact-chat/messages", async (
             ContactChatMessageRequest? request,
             HttpContext context,
-            IContactChatStore chats) =>
+            IContactChatStore chats,
+            AssistantQuestionNotifier notifier,
+            CancellationToken cancellationToken) =>
         {
             if (string.IsNullOrWhiteSpace(request?.Content) ||
                 request.Content.Length > MaxMessageLength)
@@ -62,9 +64,17 @@ public static class ContactChatEndpoints
             }
 
             var session = chats.AddVisitorMessage(token, request.Content.Trim());
-            return session is null
-                ? Results.Conflict(new { error = "This chat is closed or has reached its message limit." })
-                : Results.Ok(session);
+            if (session is null)
+            {
+                return Results.Conflict(new { error = "This chat is closed or has reached its message limit." });
+            }
+
+            await notifier.NotifyContactChatMessageAsync(
+                session.Id,
+                "Visitor",
+                request.Content.Trim(),
+                cancellationToken);
+            return Results.Ok(session);
         })
             .AllowAnonymous()
             .RequireRateLimiting("assistant")
@@ -95,10 +105,12 @@ public static class ContactChatEndpoints
             .Produces<ContactChatSession>(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status404NotFound);
 
-        app.MapPost("/api/admin/contact-chats/{id:guid}/messages", (
+        app.MapPost("/api/admin/contact-chats/{id:guid}/messages", async (
             Guid id,
             ContactChatMessageRequest? request,
-            IContactChatStore chats) =>
+            IContactChatStore chats,
+            AssistantQuestionNotifier notifier,
+            CancellationToken cancellationToken) =>
         {
             if (string.IsNullOrWhiteSpace(request?.Content) ||
                 request.Content.Length > MaxMessageLength)
@@ -107,9 +119,17 @@ public static class ContactChatEndpoints
             }
 
             var session = chats.AddOwnerMessage(id, request.Content.Trim());
-            return session is null
-                ? Results.Conflict(new { error = "The conversation is missing, closed, or has reached its message limit." })
-                : Results.Ok(session);
+            if (session is null)
+            {
+                return Results.Conflict(new { error = "The conversation is missing, closed, or has reached its message limit." });
+            }
+
+            await notifier.NotifyContactChatMessageAsync(
+                session.Id,
+                "Abel",
+                request.Content.Trim(),
+                cancellationToken);
+            return Results.Ok(session);
         })
             .RequireAuthorization(AdminAuthentication.AdminPolicy)
             .WithName("SendOwnerContactChatMessage")

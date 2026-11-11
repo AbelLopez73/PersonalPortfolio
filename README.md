@@ -88,7 +88,7 @@ Promotion flow: `desarrollo` Ã¢â€ â€™ `pruebas` Ã¢â€ â€™ `
 | Pruebas and Producción | Microsoft Azure | **In progress with Google Gemini.** Azure App Service cannot reach a local Ollama server and the Free plan cannot host an LLM, so the assistant will use Gemini here (issue [#30](https://github.com/AbelLopez73/PersonalPortfolio/issues/30)). |
 | Future deployments | AWS / IONOS | **To be reviewed.** When these versions are built, we will review whether the assistant can work with Ollama, hosted and reached through `Ollama:BaseUrl`. |
 
-The assistant picks its provider from configuration: when `Gemini:ApiKey` is set (Azure, set as the App Service setting `Gemini__ApiKey`; model in `Gemini:Model`, default `gemini-3.1-flash-lite`) it uses the Google Gemini free tier; otherwise it uses Ollama through `Ollama:BaseUrl` and `Ollama:Model` (local default `http://localhost:11434`). Never commit the Gemini key; for local development store it with `dotnet user-secrets set "Gemini:ApiKey" <key>` in `src/PersonalPortfolio.Api`. Each question and its answer is also sent to the owner on Telegram as a copy of the conversation when `TelegramNotifications__BotToken` and `TelegramNotifications__OwnerChatId` are set, and the endpoint is limited to 10 requests per minute per IP. When the app is deployed to [AWS](https://aws.amazon.com/) or [IONOS](https://www.ionos.com/), we will review whether an Ollama server can be hosted and pointed to through `Ollama:BaseUrl`.
+The assistant picks its provider from configuration: when `Gemini:ApiKey` is set (Azure, set as the App Service setting `Gemini__ApiKey`; model in `Gemini:Model`, default `gemini-3.1-flash-lite`) it uses the Google Gemini free tier; otherwise it uses Ollama through `Ollama:BaseUrl` and `Ollama:Model` (local default `http://localhost:11434`). Never commit the Gemini key; for local development store it with `dotnet user-secrets set "Gemini:ApiKey" <key>` in `src/PersonalPortfolio.Api`. Each assistant question and answer, plus every visitor and owner message in a website chat, is copied to the owner's Telegram chat when `TelegramNotifications__BotToken` and `TelegramNotifications__OwnerChatId` are set. Messages carry conversation IDs and long messages are split into Telegram-sized parts. The endpoint is limited to 10 requests per minute per IP. When the app is deployed to [AWS](https://aws.amazon.com/) or [IONOS](https://www.ionos.com/), we will review whether an Ollama server can be hosted and pointed to through `Ollama:BaseUrl`.
 
 ### Configure Telegram assistant alerts
 
@@ -110,7 +110,7 @@ In Azure, add the following application settings to the API App Service for both
 | `TelegramNotifications__OwnerChatId` | Owner's private Telegram chat ID |
 | `TelegramNotifications__EnvironmentLabel` | `Pruebas` on the test app; `Producción` on the production app |
 
-Each Telegram copy starts with its environment label, so local tests, Pruebas, and Producción are easy to tell apart even when they use the same private owner chat. Without an explicit label, the API uses its ASP.NET environment name. These notifications are sent to the configured owner's private chat ID, not to a visitor-facing Telegram conversation.
+Each Telegram copy starts with its environment label, so local tests, Pruebas, and Producción are easy to tell apart even when they use the same private owner chat. Assistant messages include an assistant conversation ID; website chat messages include the chat ID and the initial notification links it to the assistant conversation. Long messages are split into multiple Telegram messages without truncating their content. Without an explicit label, the API uses its ASP.NET environment name. These copies are sent to the configured owner's private chat ID, not to a visitor-facing Telegram conversation.
 
 Set these values through the App Service configuration in the Azure portal; do not put them in deployment workflow files, GitHub Actions variables, Docker Compose, or source control. Save the settings and restart the API app if Azure does not restart it automatically. To verify the setup, send a test question through the public assistant and confirm that the owner receives the question and response in Telegram with the correct environment label.
 
@@ -119,6 +119,14 @@ Set these values through the App Service configuration in the Azure portal; do n
 Visitors can ask the assistant to connect them with Abel on the website. The assistant asks for their name and explicit consent before sharing the name and conversation. It does not ask visitors for an email address, phone number, or Telegram handle. Abel must be signed in to the owner workspace to receive live messages. Only one conversation is active at a time; requests received while Abel is busy or offline wait in order for up to 60 minutes.
 
 The initial queue is held in API memory only. A restart, deployment, or process recycle clears waiting and active chats; the page tells both visitor and owner about this limitation. Do not rely on this in-memory queue for durable message storage. Persistent storage requires a separately reviewed change.
+
+### Direct phone and email options (#98)
+
+When a visitor asks how to reach Abel directly, the assistant should suggest calling or emailing and present clear phone and email actions. These actions should use `tel:` and `mailto:` links; the actual contact values are intentionally omitted from repository documentation.
+
+### Visitor names in Telegram headers (#99)
+
+Telegram transcript headers will include the visitor's name when it is known, while retaining the speaker label, environment label, and conversation/chat IDs. Notifications without a collected name will remain clearly identified without inventing one.
 
 ## Issue and Branch Mapping
 
@@ -162,6 +170,8 @@ The initial queue is held in API memory only. A restart, deployment, or process 
 | 89. Open to suggestions: collect visitor suggestions and proposals | [#89](https://github.com/AbelLopez73/PersonalPortfolio/issues/89) | `feature/issue-89-visitor-suggestions` |
 | 94. Website human chat and waiting queue | [#94](https://github.com/AbelLopez73/PersonalPortfolio/issues/94) | `feature/issue-94-website-human-chat-queue` |
 | 95. Copy complete visitor conversations to Telegram | [#95](https://github.com/AbelLopez73/PersonalPortfolio/issues/95) | `feature/issue-95-telegram-complete-transcript` |
+| 98. Offer phone and email contact options to visitors | [#98](https://github.com/AbelLopez73/PersonalPortfolio/issues/98) | `feature/issue-98-public-contact-options` |
+| 99. Include the visitor name in Telegram conversation headers | [#99](https://github.com/AbelLopez73/PersonalPortfolio/issues/99) | `feature/issue-99-telegram-speaker-names` |
 | Workflow: integration | N/A | `desarrollo` |
 | Workflow: validation | N/A | `pruebas` |
 | Workflow: release candidate | N/A | `produccion` |

@@ -1,3 +1,6 @@
 namespace PersonalPortfolio.Api.Assistant;
 
-public sealed record AssistantChatRequest(IReadOnlyList<AssistantChatMessage>? Messages);
+/// <summary>Visitor message history and its stable identifier for Telegram conversation copies.</summary>
+public sealed record AssistantChatRequest(
+    IReadOnlyList<AssistantChatMessage>? Messages,
+    Guid? ConversationId = null);

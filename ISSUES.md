@@ -167,6 +167,33 @@
   - API behavior and frontend integration are covered by automated tests, including provider-unavailable behavior.
   - Local setup and the Ollama dependency are documented.
 
+### 98. Offer phone and email contact options to visitors
+- Type: Feature
+- Priority: Medium
+- Phase: Public Site
+- Status: Backlog
+- Description: Have the assistant suggest a phone call or email when a visitor asks how to reach Abel, with direct actions alongside the existing contact flow.
+- Acceptance criteria:
+  - The assistant can clearly suggest calling or emailing when a visitor asks how to reach Abel.
+  - Visitors can choose accessible phone-call or email actions.
+  - Actions use `tel:` and `mailto:` links with contact values supplied during implementation.
+  - Personal contact values are not copied into public issue text or repository documentation.
+  - Existing website chat, queue, and consent behavior remains unchanged.
+  - Tests cover the rendered actions and the README documents the feature.
+
+### 99. Include the visitor name in Telegram conversation headers
+- Type: Feature
+- Priority: Medium
+- Phase: Telegram
+- Status: Backlog
+- Description: Include a known visitor name in Telegram transcript headers so the owner can identify who is speaking.
+- Acceptance criteria:
+  - Assistant transcript and website chat message copies include the visitor name when available.
+  - Speaker labels and conversation/chat IDs remain present for attribution and correlation.
+  - Notifications without a known name remain clear and do not invent one.
+  - Long-message splitting and complete content delivery are preserved.
+  - Tests cover named and unnamed conversations, and the README documents the behavior.
+
 ## Pending Problems
 - Free hosting sleep and quota limitations.
 - Telegram delivery delay after API wake-up.
@@ -222,6 +249,8 @@
 | 89. Open to suggestions: collect visitor suggestions and proposals | [#89](https://github.com/AbelLopez73/PersonalPortfolio/issues/89) | `feature/issue-89-visitor-suggestions` |
 | 94. Website human chat and waiting queue | [#94](https://github.com/AbelLopez73/PersonalPortfolio/issues/94) | `feature/issue-94-website-human-chat-queue` |
 | 95. Copy complete visitor conversations to Telegram | [#95](https://github.com/AbelLopez73/PersonalPortfolio/issues/95) | `feature/issue-95-telegram-complete-transcript` |
+| 98. Offer phone and email contact options to visitors | [#98](https://github.com/AbelLopez73/PersonalPortfolio/issues/98) | `feature/issue-98-public-contact-options` |
+| 99. Include the visitor name in Telegram conversation headers | [#99](https://github.com/AbelLopez73/PersonalPortfolio/issues/99) | `feature/issue-99-telegram-speaker-names` |
 | Workflow: integration | N/A | `desarrollo` |
 | Workflow: validation | N/A | `pruebas` |
 | Workflow: release candidate | N/A | `produccion` |

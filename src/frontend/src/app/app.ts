@@ -58,6 +58,7 @@ export class App implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
   private visitorChatTimer?: ReturnType<typeof setInterval>;
   private ownerChatTimer?: ReturnType<typeof setInterval>;
+  private assistantConversationId = crypto.randomUUID();
 
   protected readonly variants: ProfileVariant[] = [
     {
@@ -289,7 +290,7 @@ export class App implements OnInit {
     this.chatPending.set(true);
     this.chatError.set(false);
 
-    this.assistant.chat(messages.slice(-16)).subscribe({
+    this.assistant.chat(messages.slice(-16), this.assistantConversationId).subscribe({
       next: response => {
         this.chatMessages.update(current => [
           ...current,
@@ -317,6 +318,7 @@ export class App implements OnInit {
     this.chatDraft.set('');
     this.chatError.set(false);
     this.contactChatError.set(false);
+    this.assistantConversationId = crypto.randomUUID();
   }
 
   protected selectOwnerChat(id: string): void {
