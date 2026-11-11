@@ -2,7 +2,7 @@ namespace PersonalPortfolio.Api.Assistant;
 
 public interface IAssistantService
 {
-    Task<string> ReplyAsync(
+    Task<AssistantModelReply> ReplyAsync(
         IReadOnlyList<AssistantChatMessage> conversation,
         CancellationToken cancellationToken);
 }

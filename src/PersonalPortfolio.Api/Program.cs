@@ -64,6 +64,8 @@ builder.Services.AddScoped<IAssistantService>(services =>
         ? services.GetRequiredService<OllamaAssistantService>()
         : services.GetRequiredService<GeminiAssistantService>());
 builder.Services.AddScoped<AssistantQuestionNotifier>();
+builder.Services.AddSingleton(TimeProvider.System);
+builder.Services.AddSingleton<IContactChatStore, ContactChatStore>();
 builder.Services.AddRateLimiter(options =>
 {
     options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
@@ -214,6 +216,7 @@ app.MapGet("/api/portfolio", () => new
 
 app.MapControllers();
 app.MapOllamaAssistantEndpoints();
+app.MapContactChatEndpoints();
 app.MapAdminEndpoints();
 app.MapHub<AdminPresenceHub>("/hubs/admin")
     .RequireAuthorization(AdminAuthentication.AdminPolicy);

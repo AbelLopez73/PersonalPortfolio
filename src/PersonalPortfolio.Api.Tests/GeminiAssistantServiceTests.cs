@@ -11,18 +11,21 @@ public sealed class GeminiAssistantServiceTests
     public async Task SendsConversationWithApiKeyHeaderAndReturnsReply()
     {
         var handler = new StubHandler(HttpStatusCode.OK,
-            "{\"candidates\":[{\"content\":{\"parts\":[{\"text\":\" Hello! \"}]}}]}");
+            "{\"candidates\":[{\"content\":{\"parts\":[{\"text\":\"{\\\"reply\\\":\\\" Hello! \\\",\\\"startHumanChat\\\":false,\\\"visitorName\\\":null}\"}]}}]}");
         var service = CreateService(handler);
 
         var reply = await service.ReplyAsync(
             [new("user", "Hi"), new("assistant", "Hey"), new("user", "Skills?")],
             CancellationToken.None);
 
-        Assert.Equal("Hello!", reply);
+        Assert.Equal("Hello!", reply.Reply);
+        Assert.False(reply.StartHumanChat);
+        Assert.Null(reply.VisitorName);
         Assert.Equal("test-key", handler.ApiKey);
         Assert.Contains("gemini-3.1-flash-lite:generateContent", handler.RequestUri);
         Assert.Contains("\"role\":\"model\"", handler.Body);
         Assert.Contains("systemInstruction", handler.Body);
+        Assert.Contains("\"responseMimeType\":\"application/json\"", handler.Body);
     }
 
     [Fact]
