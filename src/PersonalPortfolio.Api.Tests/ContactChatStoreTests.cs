@@ -10,11 +10,13 @@ public sealed class ContactChatStoreTests
         var timeProvider = new TestTimeProvider();
         var store = new ContactChatStore(timeProvider);
         store.SetOwnerOnline(true);
+        var assistantConversationId = Guid.NewGuid();
 
-        var first = store.Create("First visitor", [new("user", "I want to talk")]);
-        var second = store.Create("Second visitor", [new("user", "I need help")]);
+        var first = store.Create("First visitor", assistantConversationId, [new("user", "I want to talk")]);
+        var second = store.Create("Second visitor", Guid.NewGuid(), [new("user", "I need help")]);
 
         Assert.Equal("Active", first.Session.Status);
+        Assert.Equal(assistantConversationId, first.Session.AssistantConversationId);
         Assert.Equal("Waiting", second.Session.Status);
         Assert.Equal(1, second.Session.QueuePosition);
         Assert.Null(store.AddOwnerMessage(second.Session.Id, "Not active yet"));
@@ -34,8 +36,8 @@ public sealed class ContactChatStoreTests
         var timeProvider = new TestTimeProvider();
         var store = new ContactChatStore(timeProvider);
         store.SetOwnerOnline(true);
-        var first = store.Create("Active visitor", [new("user", "Hello")]);
-        var waiting = store.Create("Waiting visitor", [new("user", "Hello")]);
+        var first = store.Create("Active visitor", Guid.NewGuid(), [new("user", "Hello")]);
+        var waiting = store.Create("Waiting visitor", Guid.NewGuid(), [new("user", "Hello")]);
 
         timeProvider.Advance(ContactChatStore.WaitLimit.Add(TimeSpan.FromSeconds(1)));
 
@@ -54,7 +56,7 @@ public sealed class ContactChatStoreTests
     {
         var store = new ContactChatStore(new TestTimeProvider());
         store.SetOwnerOnline(true);
-        var access = store.Create("Visitor", [new("user", "Hello")]);
+        var access = store.Create("Visitor", Guid.NewGuid(), [new("user", "Hello")]);
 
         store.SetOwnerOnline(false);
 

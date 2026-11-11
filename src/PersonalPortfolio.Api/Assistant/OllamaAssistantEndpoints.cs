@@ -35,6 +35,10 @@ public static class OllamaAssistantEndpoints
                 return Results.BadRequest(new { error = "Provide 1 to 16 valid chat messages; the latest message must be from the user." });
             }
 
+            var conversationId = request?.ConversationId is { } requestedId && requestedId != Guid.Empty
+                ? requestedId
+                : Guid.NewGuid();
+
             try
             {
                 chats.SetOwnerOnline(presence.IsOwnerOnline);
@@ -57,7 +61,7 @@ public static class OllamaAssistantEndpoints
                         }
                         else
                         {
-                            var access = chats.Create(modelReply.VisitorName!, messages);
+                            var access = chats.Create(modelReply.VisitorName!, conversationId, messages);
                             contactChatId = access.Session.Id;
                             context.Response.Cookies.Append(
                                 ContactChatEndpoints.VisitorCookieName,
@@ -75,14 +79,23 @@ public static class OllamaAssistantEndpoints
                             await notifier.NotifyContactRequestAsync(
                                 access.Session.VisitorName,
                                 access.Session.Id,
+                                conversationId,
                                 CreateConversationSummary(messages),
                                 cancellationToken);
                         }
                     }
                 }
 
-                await notifier.NotifyAsync(messages[^1].Content, reply, cancellationToken);
-                return Results.Ok(new AssistantChatResponse(reply, contactChatId is not null, contactChatId));
+                await notifier.NotifyAsync(
+                    conversationId,
+                    messages[^1].Content,
+                    reply,
+                    cancellationToken);
+                return Results.Ok(new AssistantChatResponse(
+                    reply,
+                    contactChatId is not null,
+                    contactChatId,
+                    conversationId));
             }
             catch (ContactChatQueueFullException)
             {
@@ -93,7 +106,11 @@ public static class OllamaAssistantEndpoints
             }
             catch (HttpRequestException)
             {
-                await notifier.NotifyAsync(messages[^1].Content, null, cancellationToken);
+                await notifier.NotifyAsync(
+                    conversationId,
+                    messages[^1].Content,
+                    null,
+                    cancellationToken);
                 return Results.Problem(
                     title: "The assistant is unavailable.",
                     detail: "The configured AI provider (Gemini or Ollama) could not be reached.",

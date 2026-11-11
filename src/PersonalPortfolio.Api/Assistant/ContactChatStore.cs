@@ -9,6 +9,7 @@ public interface IContactChatStore
 
     ContactChatAccess Create(
         string visitorName,
+        Guid assistantConversationId,
         IReadOnlyList<AssistantChatMessage> initialMessages);
 
     ContactChatSession? GetForVisitor(string? token);
@@ -25,6 +26,7 @@ public sealed record ContactChatMessage(string Sender, string Content, DateTimeO
 /// <summary>Website chat session returned to the visitor or owner.</summary>
 public sealed record ContactChatSession(
     Guid Id,
+    Guid AssistantConversationId,
     string VisitorName,
     DateTimeOffset CreatedAt,
     DateTimeOffset LastActivityAt,
@@ -94,6 +96,7 @@ public sealed class ContactChatStore : IContactChatStore
 
     public ContactChatAccess Create(
         string visitorName,
+        Guid assistantConversationId,
         IReadOnlyList<AssistantChatMessage> initialMessages)
     {
         lock (_gate)
@@ -120,7 +123,14 @@ public sealed class ContactChatStore : IContactChatStore
                 .ToList();
 
             var status = _ownerOnline && _activeConversationId is null ? "Active" : "Waiting";
-            var conversation = new Conversation(id, visitorName, tokenIndex, now, messages, status);
+            var conversation = new Conversation(
+                id,
+                assistantConversationId,
+                visitorName,
+                tokenIndex,
+                now,
+                messages,
+                status);
             _conversations.Add(id, conversation);
             _tokenIndexes.Add(tokenIndex, id);
             if (status == "Active")
@@ -295,6 +305,7 @@ public sealed class ContactChatStore : IContactChatStore
     private ContactChatSession CreateSnapshot(Conversation conversation, int? queuePosition) =>
         new(
             conversation.Id,
+            conversation.AssistantConversationId,
             conversation.VisitorName,
             conversation.CreatedAt,
             conversation.LastActivityAt,
@@ -346,6 +357,7 @@ public sealed class ContactChatStore : IContactChatStore
 
     private sealed class Conversation(
         Guid id,
+        Guid assistantConversationId,
         string visitorName,
         string tokenIndex,
         DateTimeOffset createdAt,
@@ -353,6 +365,7 @@ public sealed class ContactChatStore : IContactChatStore
         string status)
     {
         public Guid Id { get; } = id;
+        public Guid AssistantConversationId { get; } = assistantConversationId;
         public string VisitorName { get; } = visitorName;
         public string TokenIndex { get; } = tokenIndex;
         public DateTimeOffset CreatedAt { get; } = createdAt;

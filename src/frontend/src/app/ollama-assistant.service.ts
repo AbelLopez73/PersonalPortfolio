@@ -12,6 +12,7 @@ type AssistantChatResponse = {
   reply: string;
   contactChatStarted: boolean;
   contactChatId: string | null;
+  conversationId: string;
 };
 
 @Injectable({ providedIn: 'root' })
@@ -19,10 +20,10 @@ export class OllamaAssistantService {
   private readonly http = inject(HttpClient);
   private readonly apiBaseUrl = environment.apiBaseUrl.replace(/\/$/, '');
 
-  chat(messages: AssistantMessage[]): Observable<AssistantChatResponse> {
+  chat(messages: AssistantMessage[], conversationId: string): Observable<AssistantChatResponse> {
     return this.http.post<AssistantChatResponse>(
       `${this.apiBaseUrl}/api/assistant/chat`,
-      { messages },
+      { messages, conversationId },
       { withCredentials: true },
     );
   }

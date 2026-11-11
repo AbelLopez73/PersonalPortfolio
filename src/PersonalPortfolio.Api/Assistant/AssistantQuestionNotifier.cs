@@ -9,83 +9,124 @@ public sealed class AssistantQuestionNotifier(
     IHostEnvironment hostEnvironment,
     ILogger<AssistantQuestionNotifier> logger)
 {
-    private const int MaxQuestionLength = 1000;
-    private const int MaxAnswerLength = 2500;
+    private const int MaxTelegramChunkLength = 3500;
 
-    /// <summary>Best-effort Telegram copy of a question and its answer; it never throws so chat replies are not affected.</summary>
-    public async Task NotifyAsync(string question, string? answer, CancellationToken cancellationToken)
+    /// <summary>Copies an assistant conversation turn to the owner's private Telegram chat.</summary>
+    public async Task NotifyAsync(
+        Guid conversationId,
+        string question,
+        string? answer,
+        CancellationToken cancellationToken)
     {
-        var token = configuration["TelegramNotifications:BotToken"];
-        var chatId = configuration["TelegramNotifications:OwnerChatId"];
-        if (string.IsNullOrWhiteSpace(token) || string.IsNullOrWhiteSpace(chatId))
-        {
-            return;
-        }
-
         var environmentLabel = configuration["TelegramNotifications:EnvironmentLabel"]
             ?? hostEnvironment.EnvironmentName;
-        var answerText = answer is null ? "(assistant unavailable)" : Truncate(answer, MaxAnswerLength);
-        var text = $"[{environmentLabel}]\nQuestion:\n{Truncate(question, MaxQuestionLength)}\n\nAnswer:\n{answerText}";
-        try
-        {
-            using var response = await httpClientFactory
-                .CreateClient("TelegramBot")
-                .PostAsJsonAsync(
-                    $"https://api.telegram.org/bot{Uri.EscapeDataString(token)}/sendMessage",
-                    new TelegramMessage(chatId, text),
-                    cancellationToken);
-
-            if (!response.IsSuccessStatusCode)
-            {
-                logger.LogWarning("Telegram rejected an assistant question alert with status {StatusCode}.",
-                    (int)response.StatusCode);
-            }
-        }
-        catch (Exception ex) when (ex is HttpRequestException or OperationCanceledException)
-        {
-            logger.LogWarning("Telegram assistant question alert could not be delivered.");
-        }
+        var body = $"Visitor:\n{question}\n\nAssistant:\n{answer ?? "(assistant unavailable)"}";
+        var messages = CreateTelegramMessages(
+            $"[{environmentLabel}]\nAssistant conversation {conversationId}",
+            body);
+        await SendTelegramMessagesAsync(messages, "assistant conversation", cancellationToken);
     }
 
     public async Task NotifyContactRequestAsync(
         string visitorName,
-        Guid conversationId,
+        Guid chatId,
+        Guid assistantConversationId,
         string conversationSummary,
         CancellationToken cancellationToken)
     {
+        var environmentLabel = configuration["TelegramNotifications:EnvironmentLabel"]
+            ?? hostEnvironment.EnvironmentName;
+        var body = $"New website chat request\nName: {Truncate(visitorName, 100)}\nChat ID: {chatId}\nAssistant conversation: {assistantConversationId}\n\nContext:\n{conversationSummary}";
+        await SendTelegramMessagesAsync(
+            CreateTelegramMessages($"[{environmentLabel}]", body),
+            "website chat request",
+            cancellationToken);
+    }
+
+    public async Task NotifyContactChatMessageAsync(
+        Guid chatId,
+        string sender,
+        string content,
+        CancellationToken cancellationToken)
+    {
+        var environmentLabel = configuration["TelegramNotifications:EnvironmentLabel"]
+            ?? hostEnvironment.EnvironmentName;
+        var body = $"Website chat {chatId}\n{sender}:\n{content}";
+        await SendTelegramMessagesAsync(
+            CreateTelegramMessages($"[{environmentLabel}]", body),
+            "website chat message",
+            cancellationToken);
+    }
+
+    private async Task SendTelegramMessagesAsync(
+        IReadOnlyList<string> messages,
+        string notificationType,
+        CancellationToken cancellationToken)
+    {
         var token = configuration["TelegramNotifications:BotToken"];
-        var chatId = configuration["TelegramNotifications:OwnerChatId"];
-        if (string.IsNullOrWhiteSpace(token) || string.IsNullOrWhiteSpace(chatId))
+        var ownerChatId = configuration["TelegramNotifications:OwnerChatId"];
+        if (string.IsNullOrWhiteSpace(token) || string.IsNullOrWhiteSpace(ownerChatId))
         {
             return;
         }
 
-        var environmentLabel = configuration["TelegramNotifications:EnvironmentLabel"]
-            ?? hostEnvironment.EnvironmentName;
-        var text = $"[{environmentLabel}]\nNew website chat request\nName: {Truncate(visitorName, 100)}\nChat ID: {conversationId}\n\nContext:\n{Truncate(conversationSummary, MaxQuestionLength)}";
-        try
+        var client = httpClientFactory.CreateClient("TelegramBot");
+        foreach (var text in messages)
         {
-            using var response = await httpClientFactory
-                .CreateClient("TelegramBot")
-                .PostAsJsonAsync(
+            try
+            {
+                using var response = await client.PostAsJsonAsync(
                     $"https://api.telegram.org/bot{Uri.EscapeDataString(token)}/sendMessage",
-                    new TelegramMessage(chatId, text),
+                    new TelegramMessage(ownerChatId, text),
                     cancellationToken);
 
-            if (!response.IsSuccessStatusCode)
+                if (!response.IsSuccessStatusCode)
+                {
+                    logger.LogWarning("Telegram rejected a {NotificationType} copy with status {StatusCode}.",
+                        notificationType,
+                        (int)response.StatusCode);
+                }
+            }
+            catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
             {
-                logger.LogWarning("Telegram rejected a website chat request alert with status {StatusCode}.",
-                    (int)response.StatusCode);
+                logger.LogWarning("Telegram {NotificationType} copy timed out.", notificationType);
+            }
+            catch (OperationCanceledException)
+            {
+                logger.LogWarning("Telegram {NotificationType} copy was cancelled.", notificationType);
+            }
+            catch (HttpRequestException)
+            {
+                logger.LogWarning("Telegram {NotificationType} copy could not reach the provider.", notificationType);
             }
         }
-        catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
+    }
+
+    private static IReadOnlyList<string> CreateTelegramMessages(string header, string body)
+    {
+        var chunks = SplitIntoChunks(body);
+        return chunks
+            .Select((chunk, index) =>
+                $"{header}{(chunks.Count > 1 ? $"\nPart {index + 1}/{chunks.Count}" : string.Empty)}\n{chunk}")
+            .ToArray();
+    }
+
+    private static IReadOnlyList<string> SplitIntoChunks(string text)
+    {
+        var chunks = new List<string>();
+        for (var start = 0; start < text.Length;)
         {
-            logger.LogWarning("Telegram website chat request alert timed out.");
+            var end = Math.Min(start + MaxTelegramChunkLength, text.Length);
+            if (end < text.Length && char.IsHighSurrogate(text[end - 1]))
+            {
+                end--;
+            }
+
+            chunks.Add(text[start..end]);
+            start = end;
         }
-        catch (HttpRequestException)
-        {
-            logger.LogWarning("Telegram website chat request alert could not reach the provider.");
-        }
+
+        return chunks;
     }
 
     private static string Truncate(string value, int maxLength) =>
