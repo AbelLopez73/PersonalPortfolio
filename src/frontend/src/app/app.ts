@@ -1,5 +1,6 @@
-import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, DestroyRef, inject, OnInit, signal } from '@angular/core';
 import { AdminPresenceService } from './admin-presence.service';
+import { ContactChatService, ContactChatSession, ContactChatSummary } from './contact-chat.service';
 import { AssistantMessage, OllamaAssistantService } from './ollama-assistant.service';
 
 type Highlight = {
@@ -41,10 +42,22 @@ export class App implements OnInit {
   protected readonly title = signal('Abel López');
   protected readonly adminPresence = inject(AdminPresenceService);
   protected readonly assistant = inject(OllamaAssistantService);
+  protected readonly contactChats = inject(ContactChatService);
   protected readonly chatMessages = signal<AssistantMessage[]>([]);
   protected readonly chatDraft = signal('');
   protected readonly chatPending = signal(false);
   protected readonly chatError = signal(false);
+  protected readonly contactChatSession = signal<ContactChatSession | null>(null);
+  protected readonly contactChatError = signal(false);
+  protected readonly contactChatPending = signal(false);
+  protected readonly ownerChats = signal<ContactChatSummary[]>([]);
+  protected readonly selectedOwnerChat = signal<ContactChatSession | null>(null);
+  protected readonly ownerChatDraft = signal('');
+  protected readonly ownerChatPending = signal(false);
+  protected readonly ownerChatError = signal(false);
+  private readonly destroyRef = inject(DestroyRef);
+  private visitorChatTimer?: ReturnType<typeof setInterval>;
+  private ownerChatTimer?: ReturnType<typeof setInterval>;
 
   protected readonly variants: ProfileVariant[] = [
     {
@@ -230,7 +243,17 @@ export class App implements OnInit {
   protected readonly resumeUrl = computed(() => this.currentVariant().resumeUrl);
 
   ngOnInit(): void {
-    void this.adminPresence.initialize();
+    void this.initializeAdmin();
+    this.restoreVisitorChat();
+    this.destroyRef.onDestroy(() => {
+      if (this.visitorChatTimer) {
+        clearInterval(this.visitorChatTimer);
+      }
+
+      if (this.ownerChatTimer) {
+        clearInterval(this.ownerChatTimer);
+      }
+    });
   }
 
   protected selectVariant(variantId: string): void {
@@ -251,7 +274,12 @@ export class App implements OnInit {
     event.preventDefault();
     const content = this.chatDraft().trim();
 
-    if (!content || this.chatPending()) {
+    if (!content || this.chatPending() || this.contactChatPending()) {
+      return;
+    }
+
+    if (this.contactChatSession()) {
+      this.sendVisitorChatMessage(content);
       return;
     }
 
@@ -268,11 +296,148 @@ export class App implements OnInit {
           { role: 'assistant', content: response.reply },
         ]);
         this.chatPending.set(false);
+        if (response.contactChatStarted) {
+          this.restoreVisitorChat();
+        }
       },
       error: () => {
         this.chatError.set(true);
         this.chatPending.set(false);
       },
+    });
+  }
+
+  protected updateOwnerChatDraft(event: Event): void {
+    this.ownerChatDraft.set((event.target as HTMLTextAreaElement).value);
+  }
+
+  protected resetVisitorChat(): void {
+    this.contactChatSession.set(null);
+    this.chatMessages.set([]);
+    this.chatDraft.set('');
+    this.chatError.set(false);
+    this.contactChatError.set(false);
+  }
+
+  protected selectOwnerChat(id: string): void {
+    this.contactChats.getOwnerChat(id).subscribe({
+      next: session => {
+        this.selectedOwnerChat.set(session);
+        this.ownerChatError.set(false);
+      },
+      error: () => this.ownerChatError.set(true),
+    });
+  }
+
+  protected sendOwnerChatMessage(event: Event): void {
+    event.preventDefault();
+    const chat = this.selectedOwnerChat();
+    const content = this.ownerChatDraft().trim();
+    if (!chat || chat.status !== 'Active' || !content || this.ownerChatPending()) {
+      return;
+    }
+
+    this.ownerChatPending.set(true);
+    this.ownerChatError.set(false);
+    this.contactChats.sendOwnerMessage(chat.id, content).subscribe({
+      next: session => {
+        this.selectedOwnerChat.set(session);
+        this.ownerChatDraft.set('');
+        this.ownerChatPending.set(false);
+      },
+      error: () => {
+        this.ownerChatPending.set(false);
+        this.ownerChatError.set(true);
+      },
+    });
+  }
+
+  protected closeOwnerChat(): void {
+    const chat = this.selectedOwnerChat();
+    if (!chat || this.ownerChatPending()) {
+      return;
+    }
+
+    this.ownerChatPending.set(true);
+    this.contactChats.closeOwnerChat(chat.id).subscribe({
+      next: () => {
+        this.ownerChatPending.set(false);
+        this.refreshOwnerChats();
+      },
+      error: () => {
+        this.ownerChatPending.set(false);
+        this.ownerChatError.set(true);
+      },
+    });
+  }
+
+  private async initializeAdmin(): Promise<void> {
+    await this.adminPresence.initialize();
+    if (this.adminPresence.isAdmin()) {
+      this.refreshOwnerChats();
+      this.ownerChatTimer = setInterval(() => this.refreshOwnerChats(), 3000);
+    }
+  }
+
+  private restoreVisitorChat(): void {
+    this.contactChats.getVisitorSession().subscribe({
+      next: session => {
+        this.contactChatSession.set(session);
+        if (session && !this.visitorChatTimer) {
+          this.visitorChatTimer = setInterval(() => this.refreshVisitorChat(), 3000);
+        }
+      },
+      error: () => this.contactChatError.set(true),
+    });
+  }
+
+  private refreshVisitorChat(): void {
+    this.contactChats.getVisitorSession().subscribe({
+      next: session => {
+        if (session) {
+          this.contactChatSession.set(session);
+        }
+      },
+      error: () => this.contactChatError.set(true),
+    });
+  }
+
+  private sendVisitorChatMessage(content: string): void {
+    this.contactChatPending.set(true);
+    this.contactChatError.set(false);
+    this.contactChats.sendVisitorMessage(content).subscribe({
+      next: session => {
+        this.contactChatSession.set(session);
+        this.chatDraft.set('');
+        this.contactChatPending.set(false);
+      },
+      error: () => {
+        this.contactChatPending.set(false);
+        this.contactChatError.set(true);
+      },
+    });
+  }
+
+  private refreshOwnerChats(): void {
+    this.contactChats.listOwnerChats().subscribe({
+      next: sessions => {
+        this.ownerChats.set(sessions);
+        this.ownerChatError.set(false);
+        const selected = this.selectedOwnerChat();
+        if (selected) {
+          this.contactChats.getOwnerChat(selected.id).subscribe({
+            next: session => this.selectedOwnerChat.set(session),
+            error: () => this.ownerChatError.set(true),
+          });
+        } else {
+          const next = sessions.find(session => session.status === 'Active') ??
+            sessions.find(session => session.status === 'Waiting');
+          if (next) {
+            this.selectOwnerChat(next.id);
+          }
+        }
+      },
+      error: () => this.ownerChatError.set(true),
     });
   }
 }

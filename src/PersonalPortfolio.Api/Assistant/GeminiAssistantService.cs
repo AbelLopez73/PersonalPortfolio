@@ -1,4 +1,5 @@
 using System.Net.Http.Json;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace PersonalPortfolio.Api.Assistant;
@@ -6,8 +7,9 @@ namespace PersonalPortfolio.Api.Assistant;
 public sealed class GeminiAssistantService(HttpClient httpClient, IConfiguration configuration) : IAssistantService
 {
     private readonly string _model = configuration["Gemini:Model"] ?? "gemini-3.1-flash-lite";
+    private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web);
 
-    public async Task<string> ReplyAsync(
+    public async Task<AssistantModelReply> ReplyAsync(
         IReadOnlyList<AssistantChatMessage> conversation,
         CancellationToken cancellationToken)
     {
@@ -17,7 +19,8 @@ public sealed class GeminiAssistantService(HttpClient httpClient, IConfiguration
                 .Select(message => new GeminiContent(
                     message.Role == "assistant" ? "model" : "user",
                     [new GeminiPart(message.Content)]))
-                .ToList());
+                .ToList(),
+            new GeminiGenerationConfig("application/json"));
 
         using var httpRequest = new HttpRequestMessage(
             HttpMethod.Post,
@@ -32,19 +35,36 @@ public sealed class GeminiAssistantService(HttpClient httpClient, IConfiguration
 
         var result = await response.Content.ReadFromJsonAsync<GeminiResponse>(
             cancellationToken: cancellationToken);
-        var reply = result?.Candidates?.FirstOrDefault()?.Content?.Parts?.FirstOrDefault()?.Text?.Trim();
+        var json = result?.Candidates?.FirstOrDefault()?.Content?.Parts?.FirstOrDefault()?.Text?.Trim();
 
-        if (string.IsNullOrWhiteSpace(reply))
+        if (string.IsNullOrWhiteSpace(json))
         {
             throw new HttpRequestException("Gemini returned an empty response.");
         }
 
-        return reply;
+        try
+        {
+            var reply = JsonSerializer.Deserialize<AssistantModelReply>(json, JsonOptions);
+            if (reply is null || string.IsNullOrWhiteSpace(reply.Reply))
+            {
+                throw new JsonException("Gemini returned an incomplete assistant response.");
+            }
+
+            return reply with { Reply = reply.Reply.Trim() };
+        }
+        catch (JsonException exception)
+        {
+            throw new HttpRequestException("Gemini returned an invalid assistant response.", exception);
+        }
     }
 
     private sealed record GeminiRequest(
         [property: JsonPropertyName("systemInstruction")] GeminiContent SystemInstruction,
-        [property: JsonPropertyName("contents")] List<GeminiContent> Contents);
+        [property: JsonPropertyName("contents")] List<GeminiContent> Contents,
+        [property: JsonPropertyName("generationConfig")] GeminiGenerationConfig GenerationConfig);
+
+    private sealed record GeminiGenerationConfig(
+        [property: JsonPropertyName("responseMimeType")] string ResponseMimeType);
 
     private sealed record GeminiContent(
         [property: JsonPropertyName("role"), JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] string? Role,

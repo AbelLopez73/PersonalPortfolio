@@ -14,4 +14,32 @@ GET {{PersonalPortfolio.Api_HostAddress}}/api/admin/login
 ### Logout (requires the admin cookie)
 POST {{PersonalPortfolio.Api_HostAddress}}/api/admin/logout
 
+### Resume website contact chat (requires the HttpOnly visitor cookie)
+GET {{PersonalPortfolio.Api_HostAddress}}/api/contact-chat/session
+
+### Send a website contact chat message (requires the HttpOnly visitor cookie)
+POST {{PersonalPortfolio.Api_HostAddress}}/api/contact-chat/messages
+Content-Type: application/json
+
+{
+  "content": "Thank you for getting back to me."
+}
+
+### List visitor chats (requires the admin cookie)
+GET {{PersonalPortfolio.Api_HostAddress}}/api/admin/contact-chats
+
+### Read a visitor chat (replace with a session ID from the previous request)
+GET {{PersonalPortfolio.Api_HostAddress}}/api/admin/contact-chats/{{chatId}}
+
+### Reply to an active visitor chat (requires the admin cookie)
+POST {{PersonalPortfolio.Api_HostAddress}}/api/admin/contact-chats/{{chatId}}/messages
+Content-Type: application/json
+
+{
+  "content": "Hello, thanks for reaching out."
+}
+
+### End a visitor chat and promote the next waiting visitor
+POST {{PersonalPortfolio.Api_HostAddress}}/api/admin/contact-chats/{{chatId}}/close
+
 ###

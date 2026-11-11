@@ -114,6 +114,12 @@ Each Telegram copy starts with its environment label, so local tests, Pruebas, a
 
 Set these values through the App Service configuration in the Azure portal; do not put them in deployment workflow files, GitHub Actions variables, Docker Compose, or source control. Save the settings and restart the API app if Azure does not restart it automatically. To verify the setup, send a test question through the public assistant and confirm that the owner receives the question and response in Telegram with the correct environment label.
 
+### Website human chat and waiting queue
+
+Visitors can ask the assistant to connect them with Abel on the website. The assistant asks for their name and explicit consent before sharing the name and conversation. It does not ask visitors for an email address, phone number, or Telegram handle. Abel must be signed in to the owner workspace to receive live messages. Only one conversation is active at a time; requests received while Abel is busy or offline wait in order for up to 60 minutes.
+
+The initial queue is held in API memory only. A restart, deployment, or process recycle clears waiting and active chats; the page tells both visitor and owner about this limitation. Do not rely on this in-memory queue for durable message storage. Persistent storage requires a separately reviewed change.
+
 ## Issue and Branch Mapping
 
 | Issue or branch role | GitHub issue | Branch |
@@ -154,6 +160,8 @@ Set these values through the App Service configuration in the Azure portal; do n
 | 87. Assistant: let visitors request to contact Abel | [#87](https://github.com/AbelLopez73/PersonalPortfolio/issues/87) | `feature/issue-87-assistant-contact-request` |
 | 88. Assistant: group interview request with owner approval | [#88](https://github.com/AbelLopez73/PersonalPortfolio/issues/88) | `feature/issue-88-assistant-group-interview` |
 | 89. Open to suggestions: collect visitor suggestions and proposals | [#89](https://github.com/AbelLopez73/PersonalPortfolio/issues/89) | `feature/issue-89-visitor-suggestions` |
+| 94. Website human chat and waiting queue | [#94](https://github.com/AbelLopez73/PersonalPortfolio/issues/94) | `feature/issue-94-website-human-chat-queue` |
+| 95. Copy complete visitor conversations to Telegram | [#95](https://github.com/AbelLopez73/PersonalPortfolio/issues/95) | `feature/issue-95-telegram-complete-transcript` |
 | Workflow: integration | N/A | `desarrollo` |
 | Workflow: validation | N/A | `pruebas` |
 | Workflow: release candidate | N/A | `produccion` |

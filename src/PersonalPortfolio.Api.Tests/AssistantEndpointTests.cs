@@ -35,13 +35,54 @@ public sealed class AssistantEndpointTests(
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
     }
 
+    [Fact]
+    public async Task StartsWebsiteChatOnlyAfterNameAndExplicitConsent()
+    {
+        var response = await Post(
+            new AssistantChatMessage("user", "My name is Avery"),
+            new AssistantChatMessage("assistant", "Do you agree to share your name and conversation with Abel?"),
+            new AssistantChatMessage("user", "Yes, I agree"));
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        var result = await response.Content.ReadFromJsonAsync<AssistantChatResponse>();
+        Assert.NotNull(result);
+        Assert.True(result.ContactChatStarted);
+        Assert.NotNull(result.ContactChatId);
+
+        var cookie = Assert.Single(response.Headers.GetValues("Set-Cookie"));
+        Assert.Contains("HttpOnly", cookie, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains(ContactChatEndpoints.VisitorCookieName, cookie);
+    }
+
+    [Fact]
+    public async Task DoesNotStartWebsiteChatWithoutExplicitConsent()
+    {
+        var response = await Post(
+            new AssistantChatMessage("user", "My name is Avery"),
+            new AssistantChatMessage("assistant", "Do you agree to share your name and conversation with Abel?"),
+            new AssistantChatMessage("user", "Maybe later"));
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        var result = await response.Content.ReadFromJsonAsync<AssistantChatResponse>();
+        Assert.NotNull(result);
+        Assert.False(result.ContactChatStarted);
+        Assert.False(response.Headers.Contains("Set-Cookie"));
+    }
+
     private Task<HttpResponseMessage> Post(params AssistantChatMessage[] messages) =>
         _client.PostAsJsonAsync("/api/assistant/chat", new AssistantChatRequest(messages));
 
     private sealed class FakeAssistantService : IAssistantService
     {
-        public Task<string> ReplyAsync(
+        public Task<AssistantModelReply> ReplyAsync(
             IReadOnlyList<AssistantChatMessage> conversation,
-            CancellationToken cancellationToken) => Task.FromResult("ok");
+            CancellationToken cancellationToken)
+        {
+            var startChat = conversation[^1].Content.StartsWith("yes", StringComparison.OrdinalIgnoreCase);
+            return Task.FromResult(new AssistantModelReply(
+                "ok",
+                startChat,
+                startChat ? "Avery" : null));
+        }
     }
 }

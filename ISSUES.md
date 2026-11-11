@@ -220,6 +220,8 @@
 | 87. Assistant: let visitors request to contact Abel | [#87](https://github.com/AbelLopez73/PersonalPortfolio/issues/87) | `feature/issue-87-assistant-contact-request` |
 | 88. Assistant: group interview request with owner approval | [#88](https://github.com/AbelLopez73/PersonalPortfolio/issues/88) | `feature/issue-88-assistant-group-interview` |
 | 89. Open to suggestions: collect visitor suggestions and proposals | [#89](https://github.com/AbelLopez73/PersonalPortfolio/issues/89) | `feature/issue-89-visitor-suggestions` |
+| 94. Website human chat and waiting queue | [#94](https://github.com/AbelLopez73/PersonalPortfolio/issues/94) | `feature/issue-94-website-human-chat-queue` |
+| 95. Copy complete visitor conversations to Telegram | [#95](https://github.com/AbelLopez73/PersonalPortfolio/issues/95) | `feature/issue-95-telegram-complete-transcript` |
 | Workflow: integration | N/A | `desarrollo` |
 | Workflow: validation | N/A | `pruebas` |
 | Workflow: release candidate | N/A | `produccion` |

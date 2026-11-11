@@ -10,6 +10,8 @@ export type AssistantMessage = {
 
 type AssistantChatResponse = {
   reply: string;
+  contactChatStarted: boolean;
+  contactChatId: string | null;
 };
 
 @Injectable({ providedIn: 'root' })
@@ -21,6 +23,7 @@ export class OllamaAssistantService {
     return this.http.post<AssistantChatResponse>(
       `${this.apiBaseUrl}/api/assistant/chat`,
       { messages },
+      { withCredentials: true },
     );
   }
 }
